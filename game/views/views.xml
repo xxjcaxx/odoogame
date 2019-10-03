@@ -1,0 +1,93 @@
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="game.player_list">
+      <field name="name">player list</field>
+      <field name="model">game.player</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="fortresses"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.player_form">
+      <field name="name">player form</field>
+      <field name="model">game.player</field>
+      <field name="arch" type="xml">
+        <form>
+          <field name="name"/>
+          <field name="fortresses"/>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.player_action_window">
+      <field name="name">Player window</field>
+      <field name="res_model">game.player</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.ui.view" id="game.fortress_list">
+      <field name="name">fortress list</field>
+      <field name="model">game.fortress</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="player"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.fortress_form">
+      <field name="name">fortress form</field>
+      <field name="model">game.fortress</field>
+      <field name="arch" type="xml">
+        <form>
+          <field name="name"/>
+          <field name="player"/>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.fortress_action_window">
+      <field name="name">fortress window</field>
+      <field name="res_model">game.fortress</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="game.action_server">
+      <field name="name">game server</field>
+      <field name="model_id" ref="model_game_game"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+
+    <menuitem name="Game" id="game.menu_root"/>
+
+    <!-- menu categories -->
+
+    <menuitem name="Admin Game" id="game.menu_1" parent="game.menu_root"/>
+
+    <!-- actions -->
+
+    <menuitem name="Players" id="game.menu_1_list" parent="game.menu_1"
+              action="game.player_action_window"/>
+    <menuitem name="Fortress" id="game.menu_2_list" parent="game.menu_1"
+              action="game.fortress_action_window"/>
+
+  </data>
+</odoo>
