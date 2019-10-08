@@ -1,0 +1,120 @@
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="game.production_list">
+      <field name="name">production list</field>
+      <field name="model">game.production</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="resource"/>
+          <field name="level"/>
+          <field name="raw"/>
+          <field name="production"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.production_form">
+      <field name="name">production form</field>
+      <field name="model">game.production</field>
+      <field name="arch" type="xml">
+        <form>
+  <sheet>
+    <group>
+           <field name="name"/>
+          <field name="resource"/>
+          <field name="level"/>
+          <field name="raw"/>
+          <field name="production"/>
+         </group></sheet></form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.production_action_window">
+      <field name="name">production window</field>
+      <field name="res_model">game.production</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <record model="ir.ui.view" id="game.cost_list">
+      <field name="name">cost list</field>
+      <field name="model">game.cost</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="resource"/>
+          <field name="level"/>
+          <field name="raw"/>
+          <field name="cost"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.cost_form">
+      <field name="name">cost form</field>
+      <field name="model">game.cost</field>
+      <field name="arch" type="xml">
+        <form>
+  <sheet>
+    <group>
+           <field name="name"/>
+          <field name="resource"/>
+          <field name="level"/>
+          <field name="raw"/>
+          <field name="cost"/>
+         </group></sheet></form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.cost_action_window">
+      <field name="name">cost window</field>
+      <field name="res_model">game.cost</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+        <record model="ir.ui.view" id="game.raws_list">
+      <field name="name">raw list</field>
+      <field name="model">game.raws</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="player"/>
+          <field name="raw"/>
+          <field name="quantity"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.raws_form">
+      <field name="name">raw form</field>
+      <field name="model">game.raws</field>
+      <field name="arch" type="xml">
+        <form>
+  <sheet>
+    <group>
+          <field name="name"/>
+          <field name="player"/>
+          <field name="raw"/>
+          <field name="quantity"/>
+         </group></sheet></form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.raws_action_window">
+      <field name="name">raw window</field>
+      <field name="res_model">game.raws</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+        <menuitem name="Production" id="game.menu_4_list" parent="game.menu_1"
+              action="game.production_action_window"/>
+              <menuitem name="Cost" id="game.menu_5_list" parent="game.menu_1"
+              action="game.cost_action_window"/>
+              <menuitem name="Raws" id="game.menu_6_list" parent="game.menu_1"
+              action="game.raws_action_window"/>
+
+  </data>
+</odoo>

@@ -17,9 +17,13 @@
       <field name="model">game.player</field>
       <field name="arch" type="xml">
         <form>
+  <sheet>
+    <group>
           <field name="name"/>
           <field name="fortresses"/>
-        </form>
+          <field name="resources"/>
+          <button name="reset_player" type="object" string="Reset" class="oe_highlight" />
+         </group></sheet></form>
       </field>
     </record>
 
@@ -36,6 +40,8 @@
         <tree>
           <field name="name"/>
           <field name="player"/>
+          <field name="template"/>
+          <field name="resources"/>
         </tree>
       </field>
     </record>
@@ -45,9 +51,13 @@
       <field name="model">game.fortress</field>
       <field name="arch" type="xml">
         <form>
+  <sheet>
+    <group>
           <field name="name"/>
           <field name="player"/>
-        </form>
+          <field name="template"/>
+          <field name="resources"/>
+         </group></sheet></form>
       </field>
     </record>
 
@@ -58,23 +68,89 @@
     </record>
 
 
-    <!-- server action to the one above -->
-    <!--
-    <record model="ir.actions.server" id="game.action_server">
-      <field name="name">game server</field>
-      <field name="model_id" ref="model_game_game"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": self._name,
-        }
+    <record model="ir.ui.view" id="game.resource_list">
+      <field name="name">resource list</field>
+      <field name="model">game.resource</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="productions"/>
+          <field name="fortress"/>
+          <field name="template"/>
+          <field name="level"/>
+        </tree>
       </field>
     </record>
-    -->
 
-    <!-- Top menu item -->
+    <record model="ir.ui.view" id="game.resource_form">
+      <field name="name">resource form</field>
+      <field name="model">game.resource</field>
+      <field name="arch" type="xml">
+        <form>
+  <sheet>
+    <group>
+          <field name="image"/>
+          <field name="name"/>
+          <field name="productions"/>
+          <field name="fortress"/>
+          <field name="template"/>
+          <field name="level"/>
+         </group></sheet></form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.resource_action_window">
+      <field name="name">resource window</field>
+      <field name="res_model">game.resource</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.ui.view" id="game.raw_list">
+      <field name="name">raw list</field>
+      <field name="model">game.raw</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="public_hash"/>
+          <field name="hidden_hash"/>
+          <field name="construccio"/>
+          <field name="armesblanques"/>
+          <field name="armesfoc"/>
+          <field name="nutricio"/>
+          <field name="tecnologia"/>
+          <field name="medicina"/>
+          <field name="energia"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.raw_form">
+      <field name="name">raw form</field>
+      <field name="model">game.raw</field>
+      <field name="arch" type="xml">
+        <form>
+  <sheet>
+    <group>
+          <field name="image"/>
+          <field name="name"/>
+          <field name="public_hash"/>
+          <field name="hidden_hash"/>
+          <field name="construccio"/>
+          <field name="armesblanques"/>
+          <field name="armesfoc"/>
+          <field name="nutricio"/>
+          <field name="tecnologia"/>
+          <field name="medicina"/>
+          <field name="energia"/>
+         </group></sheet></form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.raw_action_window">
+      <field name="name">raw window</field>
+      <field name="res_model">game.raw</field>
+      <field name="view_mode">tree,form</field>
+    </record>
 
     <menuitem name="Game" id="game.menu_root"/>
 
@@ -88,6 +164,9 @@
               action="game.player_action_window"/>
     <menuitem name="Fortress" id="game.menu_2_list" parent="game.menu_1"
               action="game.fortress_action_window"/>
-
+    <menuitem name="Resource" id="game.menu_3_list" parent="game.menu_1"
+              action="game.resource_action_window"/>
+    <menuitem name="Raw" id="game.menu_5_list" parent="game.menu_1"
+              action="game.raw_action_window"/>
   </data>
 </odoo>

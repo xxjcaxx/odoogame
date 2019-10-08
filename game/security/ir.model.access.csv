@@ -4,3 +4,4 @@ access_game_fortress,game.fortress,model_game_fortress,,1,1,1,1
 access_game_resource,game.resource,model_game_resource,,1,1,1,1
 access_game_production,game.production,model_game_production,,1,1,1,1
 access_game_raw,game.raw,model_game_raw,,1,1,1,1
+access_game_cost,game.cost,model_game_cost,,1,1,1,1

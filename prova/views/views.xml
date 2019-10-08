@@ -16,13 +16,13 @@
     -->
 
     <!-- actions opening views on models -->
-    <!--
-    <record model="ir.actions.act_window" id="prova.action_window">
-      <field name="name">prova window</field>
-      <field name="res_model">prova.prova</field>
+
+    <record model="ir.actions.act_window" id="prova.student_action_window">
+      <field name="name">student window</field>
+      <field name="res_model">prova.student</field>
       <field name="view_mode">tree,form</field>
     </record>
-    -->
+
 
     <!-- server action to the one above -->
     <!--
@@ -41,20 +41,18 @@
     -->
 
     <!-- Top menu item -->
-    <!--
-    <menuitem name="prova" id="prova.menu_root"/>
-    -->
+
+    <menuitem name="Prova" id="prova.menu_root"/>
+
     <!-- menu categories -->
-    <!--
-    <menuitem name="Menu 1" id="prova.menu_1" parent="prova.menu_root"/>
-    <menuitem name="Menu 2" id="prova.menu_2" parent="prova.menu_root"/>
-    -->
+
+    <menuitem name="Administration" id="prova.menu_1" parent="prova.menu_root"/>
+
     <!-- actions -->
-    <!--
-    <menuitem name="List" id="prova.menu_1_list" parent="prova.menu_1"
-              action="prova.action_window"/>
-    <menuitem name="Server to list" id="prova" parent="prova.menu_2"
-              action="prova.action_server"/>
-    -->
+
+    <menuitem name="Students" id="prova.menu_1_list" parent="prova.menu_1"
+              action="prova.student_action_window"/>
+
+
   </data>
 </odoo>
