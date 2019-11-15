@@ -1,0 +1,114 @@
+<odoo>
+    <data>
+        <record id="game.kitchen" model="game.resource">
+            <field name="name">kitchen</field>
+            <field name="image">iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
+AAAB2AAAAdgB+lymcgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJiSURB
+VHic7Zu/TxRBFMc/S4wCGnPkuEQoqa6hQSzE7hIbAg2FiRc7SvkDLCgp7MXSigQTExs1mEC85iRW
+9FS0mAgRDSHEBotzc8veLbuz82aXc94nuezmbvY7b969mx9v5kBRQnaBC09e7bDRQcQBF3k9N6AE
+ADfi757tmKmMPu5cjzfNLag2O9eDdfNnp1Y617z2hgyZV/1/oQ4o24CyUQeUbUDZqAOKrKza7A59
+/Zha6Q5vRaERULYBZeO9A3qmwi5Jmy7nmRLbohEgJXRV755G0T1/FI2ApA/CZaPBcjOaW6gBX4Dp
+O5Uqc/NNbo3cNjLsz/kZ37be8vvnD4B9oAEcRopkyl+ktcNFBFg3HuDm8CgP559yd6wGUAdawISo
+pbgZBT4D0wCnJ8dsb76S0q0DH4AHUoLgJgLuO9AMmZUWTIwA01RTnMaT53YCMVrvXud6Lq0d3o8C
+klnhUMt1dlmqngAuR8BXC7F25N5Gp6h62ulFFEVRFL/Q7fG8nhtQZLfHF5dfJJb5+OYlkH19EM77
+s2jq9rglkhkhdj9tAAGPFp5duo+TtLLrFyFZNZMoOCMUQBD0ub9uml1EM0LRb+aqb8kkV5BVMy/e
+9wE9w6Btr1o0Fvb25AO8RKwPkM4BppE3RxhHI0BacK/1nl9H36VlAaiMTzDTWBLVFI8AV40HODk6
+TC9kiLPzAWv7so5Yrd8T1Qvxvg/w3gHOfgKuQlYa8QiojIvvYHe1a5PimuIRID1MuUb7ACkhqalp
+0WgESAnl+c+QDTbH8qJ4HwHqgLINKBvvd4akjsgMGnpERvnHX/Ry9R6Om3dtAAAAAElFTkSuQmCC
+</field>
+            <field name="template">true</field>
+            <field name="level">1</field>
+            <field name="knowledge">3</field>
+        </record>
+          <record id="game.kitchen1_food" model="game.production">
+            <field name="name">Produccion food kitchen 1</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.food"></field>
+            <field name="level">1</field>
+            <field name="production">1</field>
+        </record>
+        <record id="game.kitchen2_food" model="game.production">
+            <field name="name">Produccion food kitchen 2</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.food"></field>
+            <field name="level">2</field>
+            <field name="production">10</field>
+        </record>
+        <record id="game.kitchen3_food" model="game.production">
+            <field name="name">Produccion food kitchen 3</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.food"></field>
+            <field name="level">3</field>
+            <field name="production">50</field>
+        </record>
+        <!-- Produccio de ferro -->
+        <record id="game.kitchen1_trigo" model="game.production">
+            <field name="name">Produccion trigo kitchen 1</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.trigo"></field>
+            <field name="level">1</field>
+            <field name="production">-2</field>
+        </record>
+        <record id="game.kitchen2_trigo" model="game.production">
+            <field name="name">Produccion trigo kitchen 2</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.trigo"></field>
+            <field name="level">2</field>
+            <field name="production">-20</field>
+        </record>
+        <record id="game.kitchen3_trigo" model="game.production">
+            <field name="name">Produccion trigo kitchen 3</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.trigo"></field>
+            <field name="level">3</field>
+            <field name="production">-100</field>
+        </record>
+
+        <!-- Costes -->
+        <record id="game.kitchen1_coste" model="game.cost">
+            <field name="name">Coste kitchen 1</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">1</field>
+            <field name="cost">50</field>
+        </record>
+        <record id="game.kitchen2_coste" model="game.cost">
+            <field name="name">Coste kitchen 2</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">2</field>
+            <field name="cost">500</field>
+        </record>
+        <record id="game.kitchen3_coste" model="game.cost">
+            <field name="name">Coste kitchen 3</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">3</field>
+            <field name="cost">5000</field>
+        </record>
+
+        <!-- Tiempos -->
+        <record id="game.kitchen1_tiempo" model="game.duration">
+            <field name="name">Tiempo kitchen 1</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="level">1</field>
+            <field name="minutes">5</field>
+            <field name="max_characters">5</field>
+        </record>
+        <record id="game.kitchen2_tiempo" model="game.duration">
+            <field name="name">Tiempo kitchen 2</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="level">2</field>
+            <field name="minutes">50</field>
+            <field name="max_characters">10</field>
+        </record>
+        <record id="game.kitchen3_tiempo" model="game.duration">
+            <field name="name">tiempo kitchen 3</field>
+            <field name="resource" ref="game.kitchen"></field>
+            <field name="level">3</field>
+            <field name="minutes">500</field>
+            <field name="max_characters">15</field>
+        </record>
+
+    </data>
+</odoo>

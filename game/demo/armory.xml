@@ -1,0 +1,82 @@
+<odoo>
+    <data>
+        <record id="game.armory" model="game.resource">
+            <field name="name">Armory</field>
+            <field name="image">iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAFcUlEQVR4nOVb3Y2rPBB1CS6BEtzB
+uoOlg6UD6AB3sHQQOkg6AClS3lbQAenA5CG60pWu5ntYDRqMAZsAm3w7kqXNJgF85syZH+8yAJAA
+kP7SJRkAqPv9/vfr60v/pnW/3/8CgGIAoC6Xyx/GGPymdblc/uwCgBAC4jgGzvmPb3p3AJIkATSt
+9SwIQRCA1ho+Pz83B2wXAMqyBGpaazgcDiCEsH4+yzIAAGjb9v/BANyQzZqmgTRNIQiC7vNN03Tv
+vb+/vz4AjH2HgVIKwjCELMvger0OwKiqCtI0Hfx+jjEvAYBthWEIeZ5D27aDTV+vV6jr2okxLwsA
+Ls45RFEEp9Op22iWZcDYtyBOMebj4+MhoXwKACgj0OI4HrwvpRxlzPF4XKQXTwUAZQDG/ufnpzX2
+TcYs1YtNAAjDENI0BSml83c45734t8V+HMeD2OecQ5Iki/VidQAojQHAWazCMOyozTkHIcRo7BdF
+YY19F73YHAClVO/GKGauy8aaqWxxOByssR9F0eCzAABRFO3LAIBvgVqjpLVlCzSbXuR5bgWBfmYT
+DZBSglKqF5daa6t3hRDQNI2XXiDdp2Ifq0mb0X5k8yxghoTZ4FRVBQCP1f1TejFmVVXtAwA+IH24
+qqq6h0ZLkmSVe03phWlJkuxXB3DOJ5sirfVAoB69H9WLsiwhz3NIkqQXbosBCIIA0jS1VmxzHqLe
+adu293otwXRdiwGgIuOb6o7HY/ddIQQEQdCbGWitIQzD5wVAStmjb1mWXgxAa5qmVyjNCebTAMAY
+GyiuS/ziqMuMfeptIUQvtTVNs8kc4GEAbDX4XC5H77dtC0qp0di3CWaaps8FAAUC2aC1nvWWEKLz
+eBAEA29TEKWUPZCqqlptEDIJQBAEncgdDofZiwghugetqqoXt0KILu+Pfd8W+xRgWvpqrb0zjzcA
+Jv1cylQqbkVRdL/DmG+aZhZEW7GE70dRtEm6XA0Axvrz/6Ioup/btnW6hi32qbe3SJdWADjnvRv5
+NCpjHZhPlWcWS0VRbJYuJ0UQKYmUdvEg9Xxd153IuQikeS0z9qm3TRCWpstJAOhQYU59UezQTqdT
+R1v0ptbaW8WTJBnE/tvbGwRBMGDZnM54A0BZkOf5pLdsBQ5udipLuCwzXU6Zb0M1CwClmuk9+ho9
+RT1GN0vZdDweF8WrSXubYZ+/GgCc825DyAIpJRRFMTjpRUDGNks34NtA0VCbG3z4iLZTJYgPrrXu
+xTnA+CCDbpYWUzRLLO3/52YLU+G6CIA4jq03mpvi2DbLOe/F8yONThiGoJQCpRScTicoyxLKsoS6
+rp3FdhQAzjmkaToQN1ofuIyxbM0SDaslmWHNNQqATXAwD6NnXdLOWLP0aGbYHADMs5TGSilgrD8Q
+cYnjsc1SsXQttnYDAL035nEMBdfiw9YsMdbvH1w6z10BoB40PU5Z4NqQjG12jcywKQBjHkeB86Hv
+2GZ9Jks/AoAt7mkM+zw03Syyh17Lt3HaBQDKAupx346RsX4tgIeaNDwA9ssMXgDYPO7TMdJFM8OY
+YdZ5GgDGPG72Cq7LPF8wzee8YTcAqMcxTqc6Rp/rmebb2e0CAGUBetzWMfqssTEaADwnADaP045x
+iXhlWWbVhK2zwSIAbB6nI6pHxMs839/6kHTxyRBlgVkyL2WBDYyti6KHzgZNj1NVX+svPrZeD50N
+Uo9LKXuKvmRC+3IAmKNpc3iyd2OzOwCUBTZ7BRY8DABtlW320xvcHADGhv8ThFbX9Y9vcBcAxmr6
+PWr5pwAAQTAPLJaUxS8LAGPDA4s92tmnAsBkw8sBcLvd/hVFAWus8/kM5/N5lWttuW632z8EQAKA
++qVL/gfenQ2bUmtfuQAAAABJRU5ErkJggg==
+</field>
+            <field name="template">true</field>
+            <field name="level">1</field>
+            <field name="knowledge">1</field>
+        </record>
+ <!-- Costes -->
+        <record id="game.armory1_coste" model="game.cost">
+            <field name="name">Coste armory 1</field>
+            <field name="resource" ref="game.armory"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">1</field>
+            <field name="cost">500</field>
+        </record>
+        <record id="game.armory2_coste" model="game.cost">
+            <field name="name">Coste armory 2</field>
+            <field name="resource" ref="game.armory"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">2</field>
+            <field name="cost">5000</field>
+        </record>
+        <record id="game.armory3_coste" model="game.cost">
+            <field name="name">Coste armory 3</field>
+            <field name="resource" ref="game.armory"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">3</field>
+            <field name="cost">50000</field>
+        </record>
+
+        <!-- Tiempos -->
+        <record id="game.armory1_tiempo" model="game.duration">
+            <field name="name">Tiempo armory 1</field>
+            <field name="resource" ref="game.armory"></field>
+            <field name="level">1</field>
+            <field name="minutes">5</field>
+            <field name="max_characters">5</field>
+        </record>
+        <record id="game.armory2_tiempo" model="game.duration">
+            <field name="name">Tiempo armory 2</field>
+            <field name="resource" ref="game.armory"></field>
+            <field name="level">2</field>
+            <field name="minutes">50</field>
+            <field name="max_characters">10</field>
+        </record>
+        <record id="game.armory3_tiempo" model="game.duration">
+            <field name="name">tiempo armory 3</field>
+            <field name="resource" ref="game.armory"></field>
+            <field name="level">3</field>
+            <field name="minutes">500</field>
+            <field name="max_characters">15</field>
+        </record>
+    </data>
+</odoo>

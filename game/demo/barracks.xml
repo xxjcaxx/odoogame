@@ -1,0 +1,103 @@
+<odoo>
+    <data>
+
+        <record id="game.barracks" model="game.resource">
+            <field name="name">Barracks</field>
+            <field name="image">iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAEh0lEQVR4nOWaS0gqbRjHJyvaJFqI
+IlJIUhQVFrRroUJJF2hTLSQiF9EiWrRol+UQ0Y2CNkG1SBe5cBFpQRcIamXQhQoKIkiIIkLMT0uz
+Dh6fs/jOhMecZpx5R6v5wbMb3uf5/xhm3rlgAKAFADNPS4sBAB4KhX4dHx//x6cKhUK/AADHAAB3
+uVxhDMOAT+VyucJpFSAWiwHHccBxHMRiMWAYBvX19ZCbm8sPAUqlEgiUSiVgGAZ7e3vw/PwMCwsL
+UFVVxU8BsRwdHUFPTw8nZ8W3EEDAxVnxrQTEYrVa+SeAt2cAL68BvL4L1NXV8XsfkMpKu4BEO0Fe
+CUh3fQkBKpUKVCoVPwWo1WrweDzg8XhArVbzS4Ber4dgMPjPRken0/FDgNFohEgk8mG3F4lEoLOz
+8+cKEAgEMDs7m3CrG8vExARkZGT8LAEikQg2NjYowxM4HA4QCoU/Q0BFRQXc3NzQDk/gdruhtLT0
+ewvo7u5OOngswWAQ2travp8AqVSa1ClPhd1uh/z8/O8hoKOjAx4fH5GFJ/B4PNDQ0PB1BUgkEnA6
+nciDx7O8vIzk2QGpAIPBAF6vl/PwBA8PD6zPBiQCSkpKYH19PWXB47HZbFBQUJB6ATKZDBYXFxPu
+6FLN29sbzMzMQF5eHvcCJBIJTE9Pw8vLS7pzf8Dv98PQ0BDtN0pJCVAoFDA5Ofklg8fj8/lgcHAQ
+pFIpGgEo7+epZmVlhZ2A7OzsdGdgjUAgYC5AKBSme37W5OTkMBcgk8nSPT9rRCIRcwEqlSrd87NG
+LpczF1BdXZ3u+VlTXFzMXIBOpyNdmHinT1XppqamhrmA9vZ20oXp7rg+w+fzwdPTE9rEcej1euYC
+ent7SRdGIeDs7AwuLy/RJo7DYDAwF2A2m0kXRiHAbrfD2toa0sDx9PX1MRcwNzdHujAKAQMDA59K
+RgGO48wFrK6uki6MQkBtbS00NjaiTRzH/Pw8cwH7+/ukC7MVEA6HAcP+/0rMJQ6Hg7mAu7s70oXZ
+Ctje3n4/5vDwEH3yvxwcHDAX8BlsBfT3978fMzY2hjZ1DLe3t8wExP7BkQi2AsrKyt6P0Wq1aFPH
+EI1GITMzM3kBVEOx2QleX19/GMjv96NP/5dEv+BQCjAajZwNNDo6+mEgi8XCWT+NRpO8gJGREc4G
+qqys/DBQc3MzZ/26urqSF2Cz2TgZ5urqivR6wdVzQaLNEKWA09NTToYZHh4mFWC1WjnpabfbkxfA
+FYWFhaQCNBoNJz1PTk6SE0B1C2TK1tYW5W3T7XYj7/v6+pqcAK72562trZQCTCYTJ73jP6F9KoCL
+Ifx+P2RlZVEKkMvlEI1GkfdvaWmhL8DhcCAfYGpqijI8UZubm8j7m81m+gLu7++RD6BQKGgLaGpq
+Qt7f6XTSE8DFBdBisdAOT9T5+TnSGbxeLz0BbH9sSgTZq+nPymAwIJ+jvLycWsDOzg7SpktLS0mH
+J+ri4gLpLOPj49QCTCYT7Sc9OsXmf56ioiKks8S+g/hHQCAQ+L27uwt8qkAg8JsQoAUAnKel/QMo
+MQuwzyut1QAAAABJRU5ErkJggg==
+</field>
+            <field name="template">true</field>
+            <field name="level">1</field>
+            <field name="knowledge">1</field>
+        </record>
+
+        <record id="game.barracks1_food" model="game.production">
+            <field name="name">Produccion food barracks 1</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="raw" ref="game.food"></field>
+            <field name="level">1</field>
+            <field name="production">-10</field>
+        </record>
+        <record id="game.barracks2_food" model="game.production">
+            <field name="name">Produccion food barracks 2</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="raw" ref="game.food"></field>
+            <field name="level">2</field>
+            <field name="production">-100</field>
+        </record>
+        <record id="game.barracks3_food" model="game.production">
+            <field name="name">Produccion food barracks 3</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="raw" ref="game.food"></field>
+            <field name="level">3</field>
+            <field name="production">-500</field>
+        </record>
+
+        <!-- Costes -->
+        <record id="game.barracks1_coste" model="game.cost">
+            <field name="name">Coste barracks 1</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">1</field>
+            <field name="cost">500</field>
+        </record>
+        <record id="game.barracks2_coste" model="game.cost">
+            <field name="name">Coste barracks 2</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">2</field>
+            <field name="cost">5000</field>
+        </record>
+        <record id="game.barracks3_coste" model="game.cost">
+            <field name="name">Coste barracks 3</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">3</field>
+            <field name="cost">50000</field>
+        </record>
+
+        <!-- Tiempos -->
+        <record id="game.barracks1_tiempo" model="game.duration">
+            <field name="name">Tiempo barracks 1</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="level">1</field>
+            <field name="minutes">5</field>
+            <field name="max_characters">5</field>
+        </record>
+        <record id="game.barracks2_tiempo" model="game.duration">
+            <field name="name">Tiempo barracks 2</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="level">2</field>
+            <field name="minutes">50</field>
+            <field name="max_characters">10</field>
+        </record>
+        <record id="game.barracks3_tiempo" model="game.duration">
+            <field name="name">tiempo barracks 3</field>
+            <field name="resource" ref="game.barracks"></field>
+            <field name="level">3</field>
+            <field name="minutes">500</field>
+            <field name="max_characters">15</field>
+        </record>
+        
+           </data>
+</odoo>

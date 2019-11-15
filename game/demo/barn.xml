@@ -1,0 +1,100 @@
+<odoo>
+    <data>
+        <record id="game.barn" model="game.resource">
+            <field name="name">barn</field>
+            <field name="image">iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAD5UlEQVR4nO2awXGrMBCGKcElUEJK
+oAPTgSnBHVgluIPQAeoATr5lcAfQAfjgyUxmMn9O6whZghUgP73YO7MXGxbp29UvgRQBSAAcntST
+CIC4Xq9fHx8f3TP59Xr9AiAiAOJ0On1GUYRn8tPp9PnPAMRxjMPhgKZp0DQNDocD4jj++wC22y2K
+ooDNiqLAdrv9WwDUbKsmpUSapkjTFFLKwX+PqArvAEzZbtsWQghjx+I4hhACbds+pCq8AJjKtgmS
+qXOPqIpVAbhk2wTJ1jmfVbEYwJxsjwngVOfWrorZAJZmm2u+q2IWgLquV80211yqoq5rPwDSNAUA
+9H2/era5NlUVfd8DAJIkWR8AkRZCeM0210xVIYQAAOR5vi6AOI5vD95sNoiiCFmWec0215qmQZZl
+1nauAsBENoTOkzVNc1ep+/1+PQDUWRpbpAchGYkxtU2FsggABWzb9o6ybhz1XcOrqrp7tpTy9j9N
+kWNiyAagl5Q6zkICAOA2O3DEkAXAJCoUfAqAlBJlWaIsy9kdPR6PKMtykN0xADRDccSQBcBV/Ez3
+LqkM6qg+9doAuIghC4Cr+Kn3bjab28JkCYC+7++yaAMA8MVwEoCL+NkyTVWwBABlX4UwBoArhpMA
+XMRPB0APpCqYC0BKOdAeDgCAJ4ajAFzFTwdga7irqyC7rmMD4IjhKIC5K7+p0qVOFUWBrutQliXe
+39+x2+1G3+n1oTQFgCOGowDmrvzUBnZdd9f54/E4en9d19jtdoN7KPsuAIBpMbQCmCN+JgAAf/qy
+xdGHnkucKTG0AjCVjGvD6Xq9ClzjqNl3BaBev9/vAQyHtBGATTTmZM6nzwGp98sIwDZt/O8AoihC
+nucAfit7FIC+cOA+kNb+vl0dFlwASZIA+NUlqwaYXh64AEIzvR9q35w+iLgA8F3+SwCo/gLgC4Dv
+8R88gJDsBeAFwCMA32I3x/V2vgD4BGBSaPWePM+tSs7Zu5sT56EApsZclmXW62gvj+MucYICEEUR
+zufz3TXn89m5tLlxggNALyCq0YvW29sbGwA3TjAAbF9wq6q6/a5rhsld4wQDoKqqQYbIKFuU0SkA
+rnGCAqBmJs/zgWLTWSMOAJc4QQEAMDi5QZ+9VVXnAHCJExwA076cur/ABcCNExwAYPh1Wd9d4gLg
+xgkSgKrkSwBw4gQHQN1cIVdPeHIBcOMEB+CpRVBdqurTFy1tOQBc4gQF4KkXQqpgqR8y9WXrFADX
+OMEAoA2IpS9DrnGCAUCuH68H+MfZ58QJCsDTfxAZO1IzdY53bhxvAP6iDwBcLpdv31taofnlcvkm
+AAkA8aSe/ADpnf3kljdSGQAAAABJRU5ErkJggg==
+</field>
+            <field name="template">true</field>
+            <field name="level">1</field>
+            <field name="knowledge">0</field>
+        </record>
+
+          <record id="game.barn1_trigo" model="game.production">
+            <field name="name">Produccion trigo barn 1</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="raw" ref="game.trigo"></field>
+            <field name="level">1</field>
+            <field name="production">10</field>
+        </record>
+        <record id="game.barn2_trigo" model="game.production">
+            <field name="name">Produccion trigo barn 2</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="raw" ref="game.trigo"></field>
+            <field name="level">2</field>
+            <field name="production">100</field>
+        </record>
+        <record id="game.barn3_trigo" model="game.production">
+            <field name="name">Produccion trigo barn 3</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="raw" ref="game.trigo"></field>
+            <field name="level">3</field>
+            <field name="production">500</field>
+        </record>
+
+
+        <!-- Costes -->
+        <record id="game.barn1_coste" model="game.cost">
+            <field name="name">Coste barn 1</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">1</field>
+            <field name="cost">5</field>
+        </record>
+        <record id="game.barn2_coste" model="game.cost">
+            <field name="name">Coste barn 2</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">2</field>
+            <field name="cost">50</field>
+        </record>
+        <record id="game.barn3_coste" model="game.cost">
+            <field name="name">Coste barn 3</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="raw" ref="game.piedra"></field>
+            <field name="level">3</field>
+            <field name="cost">500</field>
+        </record>
+
+        <!-- Tiempos -->
+        <record id="game.barn1_tiempo" model="game.duration">
+            <field name="name">Tiempo barn 1</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="level">1</field>
+            <field name="minutes">5</field>
+            <field name="max_characters">5</field>
+        </record>
+        <record id="game.barn2_tiempo" model="game.duration">
+            <field name="name">Tiempo barn 2</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="level">2</field>
+            <field name="minutes">50</field>
+            <field name="max_characters">10</field>
+        </record>
+        <record id="game.barn3_tiempo" model="game.duration">
+            <field name="name">tiempo barn 3</field>
+            <field name="resource" ref="game.barn"></field>
+            <field name="level">3</field>
+            <field name="minutes">500</field>
+            <field name="max_characters">15</field>
+        </record>
+
+    </data>
+</odoo>

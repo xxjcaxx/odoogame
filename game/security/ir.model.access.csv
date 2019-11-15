@@ -4,4 +4,14 @@ access_game_fortress,game.fortress,model_game_fortress,,1,1,1,1
 access_game_resource,game.resource,model_game_resource,,1,1,1,1
 access_game_production,game.production,model_game_production,,1,1,1,1
 access_game_raw,game.raw,model_game_raw,,1,1,1,1
+access_game_raws,game.raws,model_game_raws,,1,1,1,1
 access_game_cost,game.cost,model_game_cost,,1,1,1,1
+access_game_duration,game.duration,model_game_duration,,1,1,1,1
+access_game_character,game.character,model_game_character,,1,1,1,1
+access_game_character_template,game.character_template,model_game_character_template,,1,1,1,1
+access_game_research,game.research,model_game_research,,1,1,1,1
+access_game_stuff,game.stuff,model_game_stuff,,1,1,1,1
+access_game_image,game.stuff.image,model_game_stuff_image,,1,1,1,1
+access_game_market,game.market,model_game_market,,1,1,1,1
+access_game_clan,game.clan,model_game_clan,,1,1,1,1
+access_game_battle,game.battle,model_game_battle,,1,1,1,1

@@ -1,0 +1,41 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+
+    <record model="ir.ui.view" id="todo.student_list">
+      <field name="name">students list</field>
+      <field name="model">todo.student</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="aleatori"/>
+        </tree>
+      </field>
+    </record>
+
+
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="todo.task_action_window">
+      <field name="name">task window</field>
+      <field name="res_model">todo.task</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="todo.student_action_window">
+      <field name="name">student window</field>
+      <field name="res_model">todo.student</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Todo" id="todo.menu_root"/>
+
+    <menuitem name="Todo" id="todo.menu_1" parent="todo.menu_root"/>
+
+    <menuitem name="Task" id="todo.menu_task" parent="todo.menu_1"
+              action="todo.task_action_window"/>
+
+    <menuitem name="Student" id="todo.menu_student" parent="todo.menu_1"
+              action="todo.student_action_window"/>
+  </data>
+</odoo>

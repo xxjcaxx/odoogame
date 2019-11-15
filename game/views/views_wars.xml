@@ -1,0 +1,88 @@
+<odoo>
+  <data>
+
+      <record model="ir.ui.view" id="game.market_list">
+      <field name="name">market list</field>
+      <field name="model">game.market</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="stuff"/>
+          <field name="price"/>
+          <field name="player"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.market_form">
+      <field name="name">market form</field>
+      <field name="model">game.market</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+          <field name="name"/>
+                <field name="stuff"></field>
+                <field name="stuffk"></field>
+          <field name="price"/>
+          <field name="player"/>
+            </group></sheet></form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.market_action_window">
+      <field name="name">market window</field>
+      <field name="res_model">game.market</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Market" id="game.menu_market" parent="game.menu_1"
+              action="game.market_action_window"/>
+
+
+      <record model="ir.ui.view" id="game.battle_list">
+      <field name="name">battle list</field>
+      <field name="model">game.battle</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="attack"/>
+          <field name="characters_attack"/>
+          <field name="characters_defend"/>
+          <field name="date"/>
+          <field name="finished"/>
+
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.battle_form">
+      <field name="name">battle form</field>
+      <field name="model">game.battle</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+          <field name="name"/>
+          <field name="attack"/>
+          <field name="characters_attack"/>
+          <field name="characters_defend"/>
+          <field name="date"/>
+          <field name="finished"/>
+                        <button name="compute_battle" type="object" string="Compute Battle" class="oe_highlight" />
+
+            </group></sheet></form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.battle_action_window">
+      <field name="name">battle window</field>
+      <field name="res_model">game.battle</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+          <menuitem name="Battle" id="game.menu_battle" parent="game.menu_1"
+              action="game.battle_action_window"/>
+
+  </data>
+</odoo>

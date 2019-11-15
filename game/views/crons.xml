@@ -1,0 +1,21 @@
+<odoo>
+    <data>
+
+
+        <record model="ir.cron" forcecreate="True" id="game.cron_update">
+            <field name="name">Game: Cron Update</field>
+            <field name="model_id" ref="model_game_player"/>
+            <field name="state">code</field>
+            <field name="code">model.update_resources()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="activity_user_type">specific</field>
+            <field name="doall" eval="False" />
+        </record>
+
+
+
+    </data>
+</odoo>

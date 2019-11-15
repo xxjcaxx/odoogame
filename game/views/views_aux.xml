@@ -20,14 +20,14 @@
       <field name="model">game.production</field>
       <field name="arch" type="xml">
         <form>
-  <sheet>
-    <group>
-           <field name="name"/>
-          <field name="resource"/>
-          <field name="level"/>
-          <field name="raw"/>
-          <field name="production"/>
-         </group></sheet></form>
+          <sheet>
+            <group>
+              <field name="name"/>
+              <field name="resource"/>
+              <field name="level"/>
+              <field name="raw"/>
+              <field name="production"/>
+            </group></sheet></form>
       </field>
     </record>
 
@@ -37,7 +37,7 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-        <record model="ir.ui.view" id="game.cost_list">
+    <record model="ir.ui.view" id="game.cost_list">
       <field name="name">cost list</field>
       <field name="model">game.cost</field>
       <field name="arch" type="xml">
@@ -56,14 +56,14 @@
       <field name="model">game.cost</field>
       <field name="arch" type="xml">
         <form>
-  <sheet>
-    <group>
-           <field name="name"/>
-          <field name="resource"/>
-          <field name="level"/>
-          <field name="raw"/>
-          <field name="cost"/>
-         </group></sheet></form>
+          <sheet>
+            <group>
+              <field name="name"/>
+              <field name="resource"/>
+              <field name="level"/>
+              <field name="raw"/>
+              <field name="cost"/>
+            </group></sheet></form>
       </field>
     </record>
 
@@ -73,16 +73,18 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-
-        <record model="ir.ui.view" id="game.raws_list">
+    <record model="ir.ui.view" id="game.raws_list">
       <field name="name">raw list</field>
       <field name="model">game.raws</field>
       <field name="arch" type="xml">
-        <tree>
+        <tree decoration-danger="quantity&lt;5" decoration-warning="total_production&lt;0">
           <field name="name"/>
           <field name="player"/>
           <field name="raw"/>
           <field name="quantity"/>
+          <field name="production"/><field name="character_production"/>
+          <field name="spending"/>
+          <field name="total_production"/>
         </tree>
       </field>
     </record>
@@ -92,29 +94,156 @@
       <field name="model">game.raws</field>
       <field name="arch" type="xml">
         <form>
-  <sheet>
-    <group>
-          <field name="name"/>
-          <field name="player"/>
-          <field name="raw"/>
-          <field name="quantity"/>
-         </group></sheet></form>
+          <sheet>
+            <group>
+              <field name="name"/>
+              <field name="player"/>
+              <field name="raw"/>
+              <field name="quantity"/>
+              <field name="production"/><field name="character_production"/>
+              <field name="spending"/>
+              <field name="total_production"/>
+            </group></sheet></form>
       </field>
     </record>
 
     <record model="ir.actions.act_window" id="game.raws_action_window">
-      <field name="name">raw window</field>
+      <field name="name">raws window</field>
       <field name="res_model">game.raws</field>
       <field name="view_mode">tree,form</field>
     </record>
 
+    <record model="ir.actions.act_window" id="game.duration_action_window">
+      <field name="name">durations window</field>
+      <field name="res_model">game.duration</field>
+      <field name="view_mode">tree,form</field>
+    </record>
 
-        <menuitem name="Production" id="game.menu_4_list" parent="game.menu_1"
+    <record model="ir.ui.view" id="game.character_list">
+      <field name="name">character tree</field>
+      <field name="model">game.character</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="fortress"/>
+          <field name="science"/><field name="construction"/>
+          <field name="mining"/><field name="war"/><field name="age"/>
+          <field name="health"/><field name="resource"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.character_form">
+      <field name="name">character form</field>
+      <field name="model">game.character</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="name"/>
+              <field name="image" widget="image"/>
+              <field name="fortress"/>
+              <field name="science"/><field name="construction"/>
+              <field name="mining"/><field name="war"/>
+              <field name="health"/><field name="age"/>
+              <field name="resource"/><field name="stuff"/>
+            </group></sheet></form>
+      </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="game.character_kanban">
+      <field name="name">character kanban</field>
+      <field name="model">game.character</field>
+      <field name="arch" type="xml">
+        <kanban>
+          <field name="name"/><field name="id"/>
+          <field name="image" widget="image"/>
+          <field name="fortress"/>
+          <field name="science"/><field name="construction"/>
+          <field name="mining"/><field name="war"/>
+          <field name="health"/><field name="age"/>
+          <field name="resource"/><field name="stuff"/>
+          <templates>
+            <t t-name="kanban-box">
+              <div  t-attf-class="
+                            oe_kanban_card
+                            oe_kanban_global_click
+                            o_kanban_record_has_image_fill
+                           " >
+                <div class="oe_game_kanban_div_image">
+                  <img class="oe_kanban_image oe_character_kanban_image"
+                       t-att-alt="record.name.value"
+                       t-att-src="kanban_image('game.character', 'image', record.id.value)"/>
+                </div>
+
+                <div class="oe_kanban_details oe_game_kanban_dropdown">
+                  <a type="open"> <h4><field name="name"/></h4>  </a>
+                  <p>Fortress: <field name="fortress"/> Building: <field name="resource"/></p>
+                  <div class=".oe_game_attr_list oe_game_kanban_dropdown-content">
+                    <ul>
+                      <li>Science: <field name="science"/></li>
+                      <li>War: <field name="war"/></li>
+                      <li>Construction: <field name="construction"/></li>
+                      <li>Mining: <field name="mining"/></li>
+                      <li>Health: <field name="health"/></li>
+                      <li>Age: <field name="age"/></li>
+                    </ul>
+                  </div>
+                  <field name="stuff" attrs="{'invisible':[('stuff', '==', [])]}"/>
+                </div>
+
+              </div>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.character_action_window">
+      <field name="name">characters window</field>
+      <field name="res_model">game.character</field>
+      <field name="view_mode">kanban,tree,form</field>
+       <field name="domain"></field>
+       <field name="context">{'search_default_alive':1}</field>
+    </record>
+
+
+    <record model="ir.ui.view" id="game.research_list">
+      <field name="name">research tree</field>
+      <field name="model">game.research</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="resource"/>
+          <field name="type"/>
+          <field name="minutes_left"/>
+          <field name="research_percent"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.research_action_window">
+      <field name="name">research window</field>
+      <field name="res_model">game.research</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+    <menuitem name="Production" id="game.menu_production" parent="game.menu_1"
               action="game.production_action_window"/>
-              <menuitem name="Cost" id="game.menu_5_list" parent="game.menu_1"
+    <menuitem name="Cost" id="game.menu_cost" parent="game.menu_1"
               action="game.cost_action_window"/>
-              <menuitem name="Raws" id="game.menu_6_list" parent="game.menu_1"
+    <menuitem name="Raws" id="game.menu_raws" parent="game.menu_1"
               action="game.raws_action_window"/>
+    <menuitem name="Duration" id="game.menu_duration" parent="game.menu_1"
+              action="game.duration_action_window"/>
+    <menuitem name="Characters" id="game.menu_character" parent="game.menu_1"
+              action="game.character_action_window"/>
+    <menuitem name="Researches" id="game.menu_research" parent="game.menu_1"
+              action="game.research_action_window"/>
+
 
   </data>
 </odoo>

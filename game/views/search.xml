@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="game.character_search">
+            <field name="name">characters search</field>
+            <field name="model">game.character</field>
+            <field name="arch" type="xml">
+                <search>
+
+                    <field name="name"/>
+                    <field name="fortress"/>
+                    <field name="mining" string="Min Mining"  filter_domain="[('mining', '&gt;', self)]" />
+                    <filter name="health" string="100% health" domain="[('health', '=', 100)]"/>
+                    <filter name="alive" string="Alive" domain="[('health', '&gt;', 0)]"/>
+
+                    <filter name="group_by_fortress" string="fortress" context="{'group_by': 'fortress'}"/>
+                </search>
+
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "game",
+    'name': "todo",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -20,21 +20,13 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mail'],
+    'depends': ['base'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
-         'views/views_aux.xml', 'views/views_wars.xml',
-        'views/templates.xml', 'views/search.xml',
-'views/crons.xml',
-        'demo/data.xml',
-        'demo/raw.xml',
-        'demo/cantera.xml',
-        'demo/barracks.xml',
-        'demo/armory.xml',
-        'demo/barn.xml', 'demo/kitchen.xml',
+        'views/templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

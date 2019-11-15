@@ -1,0 +1,35 @@
+.oe_game_kanban_div_image {
+    margin-right: 25px;
+}
+
+.o_progressbar .o_progress .o_progressbar_complete {
+  background-color: #456325;
+  height: 100%;
+}
+
+.oe_character_kanban_image {
+ width: 50px;
+}
+
+.oe_game_kanban_dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.oe_game_kanban_dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  z-index: 1;
+}
+
+.oe_game_kanban_dropdown:hover .oe_game_kanban_dropdown-content {
+  display: block;
+}
+
+.oe_game_kanban_button {
+ font-size: 10px;
+}
