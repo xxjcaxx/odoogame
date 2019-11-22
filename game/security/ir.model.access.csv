@@ -5,6 +5,8 @@ access_game_resource,game.resource,model_game_resource,,1,1,1,1
 access_game_production,game.production,model_game_production,,1,1,1,1
 access_game_raw,game.raw,model_game_raw,,1,1,1,1
 access_game_raws,game.raws,model_game_raws,,1,1,1,1
+access_game_raws_resource,game.raws_resource,model_game_raws_resource,,1,1,1,1
+
 access_game_cost,game.cost,model_game_cost,,1,1,1,1
 access_game_duration,game.duration,model_game_duration,,1,1,1,1
 access_game_character,game.character,model_game_character,,1,1,1,1

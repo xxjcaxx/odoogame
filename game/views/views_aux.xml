@@ -113,6 +113,20 @@
       <field name="view_mode">tree,form</field>
     </record>
 
+
+    <record model="ir.ui.view" id="game.raws_resource_list">
+      <field name="name">raw list</field>
+      <field name="model">game.raws_resource</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="resource"/> <field name="player"/>
+          <field name="raw"/>
+          <field name="quantity"/>
+        </tree>
+      </field>
+    </record>
+
     <record model="ir.actions.act_window" id="game.duration_action_window">
       <field name="name">durations window</field>
       <field name="res_model">game.duration</field>
@@ -146,7 +160,8 @@
               <field name="science"/><field name="construction"/>
               <field name="mining"/><field name="war"/>
               <field name="health"/><field name="age"/>
-              <field name="resource"/><field name="stuff"/>
+              <field name="resource" attrs="{'readonly': [('fortress', '=', False)]}"  domain="[('fortress', '=', fortress)]"/>
+                <field name="stuff"/>
             </group></sheet></form>
       </field>
     </record>
@@ -164,12 +179,14 @@
           <field name="mining"/><field name="war"/>
           <field name="health"/><field name="age"/>
           <field name="resource"/><field name="stuff"/>
+            <field name="unemployed"/>
           <templates>
             <t t-name="kanban-box">
               <div  t-attf-class="
                             oe_kanban_card
                             oe_kanban_global_click
                             o_kanban_record_has_image_fill
+                            oe_game_kanban_background_#{record.unemployed.raw_value}
                            " >
                 <div class="oe_game_kanban_div_image">
                   <img class="oe_kanban_image oe_character_kanban_image"

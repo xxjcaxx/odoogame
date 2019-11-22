@@ -4,6 +4,7 @@ from odoo import models, fields, api, tools
 import random
 import math
 import json
+from openerp.exceptions import ValidationError
 
 
 class player(models.Model):
@@ -15,6 +16,7 @@ class player(models.Model):
      resources = fields.Many2many('game.resource', compute='_get_resources')
      raws = fields.One2many('game.raws','player')
      characters = fields.Many2many('game.character', compute='_get_resources')
+     unemployeds = fields.Many2many('game.character', compute='_get_resources')
 
      weapons_points = fields.Integer()  #Els punts a repartir en cada arma
      stuff_points = fields.Integer()  # Els punts a repartir en cada stuff
@@ -29,6 +31,7 @@ class player(models.Model):
 
              player.resources = player.fortresses.mapped('resources')
              player.characters = player.fortresses.mapped('characters')
+             player.unemployeds = player.fortresses.mapped('characters').filtered(lambda p: p.unemployed == True)
 
 
      @api.multi
@@ -100,7 +103,7 @@ class player(models.Model):
                  'quantity': 10
              })
 
-    # @api.model
+
      def update_resources(self):
          print('\033[95m'+'Updating resources')
          resources = self.env['game.resource'].search([('template', '=', False)]) # Busca els recursos que no son template
@@ -110,8 +113,6 @@ class player(models.Model):
              else:
                  productions = r.current_productions
                  c_productions = json.loads(r.characters_productions)
-                 # print(c_productions)
-                 #productions = self.env['game.production'].search([('resource','=',r.parent.id),('level','=',r.level)])
                  for p in productions:  # La llista de les produccions d'aquest recurs
                      raws = r.fortress.player.raws.filtered(lambda r: r.raw.id == p.raw.id)  # El raws del player que es d'aquesta produccio
                      if len(raws) == 0:
@@ -244,7 +245,7 @@ class fortress(models.Model):
     @api.multi
     def create_new_character(self):
         for p in self:
-            c_template = self.env.ref('game.character_template'+str(random.randint(1,2)))
+            c_template = self.env.ref('game.character_template'+str(random.randint(1,3)))
             c_template2 = self.env.ref('game.character_template'+str(random.randint(1,12)))
             c = self.env['game.character'].create({
                 'name': c_template2.name,
@@ -293,6 +294,11 @@ class resource(models.Model):
 
 
     color = fields.Integer(compute='_get_color')
+
+
+    # El resource pot ser a medida. L'usuari el crea definint el que consumeix i el que produeix
+    custom_production = fields.Many2one('game.raw')
+    raws_stored = fields.One2many('game.raws_resource','resource')
 
     @api.multi
     def _get_color(self):
@@ -347,7 +353,7 @@ class resource(models.Model):
             characters_productions = {} # Les produccions dels characters
             for p in r.current_productions:
                 if r.characters and p.production > 0:  # Sols augmenten els caracters la produccio si es positiva
-                    characters_p = sum(cc.mining for cc in r.characters)  # suma de les qualitats de minig de cada caracter
+                    characters_p = sum(cc.mining for cc in r.characters)+1  # suma de les qualitats de minig de cada caracter
                     characters_increment = math.log(characters_p, 1.1)  # Augment logaritmic
                     characters_productions[p.raw.id] = characters_increment
                 else:
@@ -410,7 +416,7 @@ class raw(models.Model):
 
 class raws(models.Model):
     _name = 'game.raws'
-    name = fields.Char()
+    name = fields.Char(related='raw.name')
     player = fields.Many2one('game.player')
     raw = fields.Many2one('game.raw')
     quantity = fields.Float()
@@ -442,6 +448,16 @@ class raws(models.Model):
             raws.character_production = c_production
             raws.total_production = productions_positive + productions_negative + raws.character_production
 
+
+class raws_resource(models.Model):
+    _name = 'game.raws_resource'
+    name = fields.Char(related='raw.name')
+    resource = fields.Many2one('game.resource')
+    raw = fields.Many2one('game.raw')
+    quantity = fields.Float()
+    player = fields.Many2one(related='resource.fortress.player')
+
+
 # Un recurs és, per exemple, una mina, que consumeix electricitat i produeix varis materials a un ritme distint
 # Cada recurs té una llista de production que indica qué i quant produeix o consumeix.
 # Els materials inicials tenen unes propietats basiques, hi ha milers de materials primaris per descobrir i
@@ -463,6 +479,42 @@ class character(models.Model):
     age = fields.Integer(default=1)
     resource = fields.Many2one('game.resource') # Falta que no puga ser d'un altre fortress
     stuff = fields.One2many('game.stuff','character')
+    unemployed = fields.Boolean(compute = '_get_unemployed')
+
+    def _get_unemployed(self):
+        for c in self:
+            if len(c.resource) == 0:
+                c.unemployed = True
+            else:
+                c.unemployed = False
+
+    @api.onchange('resource')
+    def set_fortress(self):
+        self.fortress = self.resource.fortress.id
+
+    @api.onchange('name')
+    def set_image(self):
+        c_template = self.env.ref('game.character_template' + str(random.randint(1, 3)))
+        self.image = c_template.image
+
+
+    @api.onchange('science')
+    def check_science(self):
+        if self.science > 100:
+            self.science = 100
+            return {
+                'warning': {
+                    'title': "Science",
+                    'message': "You can't put more than 100",
+                }
+            }
+
+    @api.constrains('science')
+    def check_constrain_science(self):
+        for c in self:
+          if c.science > 100:
+            raise ValidationError("Too much science!! %s" % c.science)
+
 
 class character_template(models.Model):
     _name = 'game.character.template'

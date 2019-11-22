@@ -83,13 +83,23 @@
                             </page>
                             <page string="Characters">
                                 <field name="characters" mode="kanban"/>      <!-- Candidat a widget-->
+                                <separator string="Unemployeds"></separator>
+                                <field name="unemployeds">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="fortress"/>
+                                        <field name="science"/><field name="construction"/>
+                                        <field name="mining"/><field name="war"/><field name="age"/>
+                                        <field name="health"/><field name="resource"/>
+                                    </tree>
+                                </field>
                             </page>
                         </notebook>
-                   <footer>
-                         <button name="update_resources" type="object" string="Force update" class="oe_highlight"/>
+                        <footer>
+                            <button name="update_resources" type="object" string="Force update" class="oe_highlight"/>
 
-                         <button name="reset_player" type="object" string="Reset" class="oe_highlight"/>
-                    </footer>
+                            <button name="reset_player" type="object" string="Reset" class="oe_highlight"/>
+                        </footer>
                     </sheet>
 
                 </form>
@@ -217,6 +227,8 @@
                             <page string="Construction child" attrs="{'invisible':[('template', '!=', False)]}">
                                 <group>
                                     <field name="current_productions"/>
+                                    <field name="custom_production"/>
+                                    <field name="raws_stored"/>
 
                                     <field name="productions_child"/>
                                     <field name="costs_child"/>
@@ -229,6 +241,7 @@
                                             <field name="max_characters"/>
                                         </tree>
                                     </field>
+
                                 </group>
                             </page>
                             <page string="Progress">
@@ -236,8 +249,8 @@
                                     <field name="minutes_left"/>
                                     <field name="const_percent" widget="progressbar"/>
                                     <field name="knowledge"/>
-                                    <field name="characters"/>
-                                    <field name="researches"/>
+                                    <field name="characters" context="{'default_resource':active_id,'default_fortress':fortress}"/>
+                                    <field name="researches" context="{'default_resource':active_id}"/>
                                     <field name="inactive"/>
                                 </group>
                             </page>
@@ -275,8 +288,8 @@
                                     <img class="oe_kanban_image"
                                          t-att-alt="record.name.value"
                                          t-att-src="kanban_image('game.resource', 'image_small', record.id.value)"/>
-                               <button name="level_up" type="object" string="Level"
-                                              class="oe_game_kanban_button">Level UP</button>
+                                    <button name="level_up" type="object" string="Level"
+                                            class="oe_game_kanban_button">Level UP</button>
                                 </div>
 
                                 <div class="oe_kanban_details">
@@ -393,8 +406,7 @@
                             <field name="image" widget="image"/>
                             <field name="name"/>
                             <field name="hash"/>
-                            <field name="character"/>
-
+                            <field name="character" domain="[('fortress.player','=',player)]"/>
                             <field name="player"/>
                             <field name="type"/>
                             <field name="melee"/>

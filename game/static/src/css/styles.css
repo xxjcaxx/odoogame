@@ -30,6 +30,10 @@
   display: block;
 }
 
+.o_kanban_view .oe_game_kanban_background_true {
+  background-color: #FFEEEE;
+}
+
 .oe_game_kanban_button {
  font-size: 10px;
 }
