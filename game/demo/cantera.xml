@@ -228,49 +228,7 @@
             <field name="template">true</field>
             <field name="level">1</field>
             <field name="knowledge">3</field>
-        </record>
-          <record id="game.cantera1_piedra" model="game.production">
-            <field name="name">Produccion piedra Cantera 1</field>
-            <field name="resource" ref="game.cantera"></field>
-            <field name="raw" ref="game.piedra"></field>
-            <field name="level">1</field>
-            <field name="production">1</field>
-        </record>
-        <record id="game.cantera2_piedra" model="game.production">
-            <field name="name">Produccion piedra Cantera 2</field>
-            <field name="resource" ref="game.cantera"></field>
-            <field name="raw" ref="game.piedra"></field>
-            <field name="level">2</field>
-            <field name="production">10</field>
-        </record>
-        <record id="game.cantera3_piedra" model="game.production">
-            <field name="name">Produccion piedra Cantera 3</field>
-            <field name="resource" ref="game.cantera"></field>
-            <field name="raw" ref="game.piedra"></field>
-            <field name="level">3</field>
-            <field name="production">50</field>
-        </record>
-        <!-- Produccio de ferro -->
-        <record id="game.cantera1_hierro" model="game.production">
-            <field name="name">Produccion hierro Cantera 1</field>
-            <field name="resource" ref="game.cantera"></field>
-            <field name="raw" ref="game.hierro"></field>
-            <field name="level">1</field>
-            <field name="production">1</field>
-        </record>
-        <record id="game.cantera2_hierro" model="game.production">
-            <field name="name">Produccion hierro Cantera 2</field>
-            <field name="resource" ref="game.cantera"></field>
-            <field name="raw" ref="game.hierro"></field>
-            <field name="level">2</field>
-            <field name="production">2</field>
-        </record>
-        <record id="game.cantera3_hierro" model="game.production">
-            <field name="name">Produccion hierro Cantera 3</field>
-            <field name="resource" ref="game.cantera"></field>
-            <field name="raw" ref="game.hierro"></field>
-            <field name="level">3</field>
-            <field name="production">10</field>
+            <field name="produccions" eval="[(6,0,[ref('game.piedra'),ref('game.hierro')] )]"></field>
         </record>
 
         <!-- Costes -->

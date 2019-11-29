@@ -64,7 +64,7 @@ exc2.number(10, 12, 14, 16, 17, 19, 21)
 class set(models.Model):
      _name = 'exc2.set'
 
-     name = fields.Char()
+     name = fields.Integer()
      numbers = fields.Many2many('exc2.number')
      pairs = fields.Many2many('exc2.number',compute='_get_pairs')
      odds = fields.Many2many('exc2.number',compute='_get_pairs')
@@ -112,10 +112,12 @@ class deck(models.Model):
      @api.model
      def create(self,values):     #######----->  Exemples de sobreescriure en create i write
        new_id = super(deck, self).create(values)
-       for i in [1,2,3,4,5,6,7,8,9,'J','Q','K']:
+       for i in [1,2,3,4,5,6,7,8,9,10,'J','Q','K']:
         for j in [['♣','C'],['♠','S'],['♥','H'],['♦','D']]:
-          self.env['exc2.card'].create({'name':str(i)+""+str(j[0]),'identificator':str(i)+""+str(j[1]),'deck':new_id.id}) 
-       new_id.write({'free':[(4,new_id.cards.ids)]})
+            #print(j)
+            self.env['exc2.card'].create({'name':str(i)+""+str(j[0]),'identificator':str(i)+""+str(j[1]),'deck':new_id.id})
+       new_id.write({'free':[(6,0,new_id.cards.ids)]})
+       return new_id
 
      @api.multi
      def _get_suit(self):
@@ -133,7 +135,7 @@ class deck(models.Model):
       for d in self:
        free = d.free.ids
        shuffle(free)
-       h=self.env['exc2.hand'].create({'name':'h','cards': [(4,[free[0],free[1],free[2],free[3],free[4]])]})
+       h=self.env['exc2.hand'].create({'name':'h','cards': [(6,0,[free[0],free[1],free[2],free[3],free[4]])]})
        d.write({'free':[(6,0,(d.free - h.cards).ids)]})  ## Exemple de sobre escriure en un many2many
        print(d.free)
 

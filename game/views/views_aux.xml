@@ -1,41 +1,7 @@
 <odoo>
   <data>
 
-    <record model="ir.ui.view" id="game.production_list">
-      <field name="name">production list</field>
-      <field name="model">game.production</field>
-      <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
-          <field name="resource"/>
-          <field name="level"/>
-          <field name="raw"/>
-          <field name="production"/>
-        </tree>
-      </field>
-    </record>
 
-    <record model="ir.ui.view" id="game.production_form">
-      <field name="name">production form</field>
-      <field name="model">game.production</field>
-      <field name="arch" type="xml">
-        <form>
-          <sheet>
-            <group>
-              <field name="name"/>
-              <field name="resource"/>
-              <field name="level"/>
-              <field name="raw"/>
-              <field name="production"/>
-            </group></sheet></form>
-      </field>
-    </record>
-
-    <record model="ir.actions.act_window" id="game.production_action_window">
-      <field name="name">production window</field>
-      <field name="res_model">game.production</field>
-      <field name="view_mode">tree,form</field>
-    </record>
 
     <record model="ir.ui.view" id="game.cost_list">
       <field name="name">cost list</field>
@@ -83,7 +49,7 @@
           <field name="raw"/>
           <field name="quantity"/>
           <field name="production"/><field name="character_production"/>
-          <field name="spending"/>
+
           <field name="total_production"/>
         </tree>
       </field>
@@ -101,7 +67,7 @@
               <field name="raw"/>
               <field name="quantity"/>
               <field name="production"/><field name="character_production"/>
-              <field name="spending"/>
+
               <field name="total_production"/>
             </group></sheet></form>
       </field>
@@ -154,15 +120,30 @@
         <form>
           <sheet>
             <group>
+              <group>
               <field name="name"/>
               <field name="image" widget="image"/>
               <field name="fortress"/>
+             </group>
+              <group>
               <field name="science"/><field name="construction"/>
               <field name="mining"/><field name="war"/>
               <field name="health"/><field name="age"/>
+                 </group>
+            </group>
+            <group>
+              <field name="resources_available" attrs="{'invisible': [('resource', '!=', False)]}">
+                <tree>
+                  <field name="image_small" widget="image"/>
+                  <field name="name"/>
+                  <button name="assign_to_resource" string="Assign" type="object"
+                          context="{'character':parent.id}"/>
+                </tree>
+              </field>
               <field name="resource" attrs="{'readonly': [('fortress', '=', False)]}"  domain="[('fortress', '=', fortress)]"/>
-                <field name="stuff"/>
-            </group></sheet></form>
+              <field name="stuff"/>
+             </group>
+          </sheet></form>
       </field>
     </record>
 
@@ -248,8 +229,7 @@
 
 
 
-    <menuitem name="Production" id="game.menu_production" parent="game.menu_1"
-              action="game.production_action_window"/>
+
     <menuitem name="Cost" id="game.menu_cost" parent="game.menu_1"
               action="game.cost_action_window"/>
     <menuitem name="Raws" id="game.menu_raws" parent="game.menu_1"

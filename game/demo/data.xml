@@ -173,8 +173,6 @@
             </field>
             <field name="template">true</field>
         </record>
-
-
         <record id="game.piedra" model="game.raw">
             <field name="name">Piedra</field>
             <field name="image">iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAgAElEQVR4nO3dTWtbS9b2caE+AsvG
@@ -765,6 +763,7 @@ iOQ/nAIAEC5FF9b+v70SY/UjKWd6P8CmCmQMYFIl/g0iO7bozauk6Wx/9M24oVEtDV3Ub4vxPuA9
             <field name="tecnologia">0</field>
             <field name="medicina">10</field>
             <field name="energia">10</field>
+            <field name="production_spend">4</field>
         </record>
 
 

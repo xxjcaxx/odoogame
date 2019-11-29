@@ -31,27 +31,6 @@ MQuwzyut1QAAAABJRU5ErkJggg==
             <field name="knowledge">1</field>
         </record>
 
-        <record id="game.barracks1_food" model="game.production">
-            <field name="name">Produccion food barracks 1</field>
-            <field name="resource" ref="game.barracks"></field>
-            <field name="raw" ref="game.food"></field>
-            <field name="level">1</field>
-            <field name="production">-10</field>
-        </record>
-        <record id="game.barracks2_food" model="game.production">
-            <field name="name">Produccion food barracks 2</field>
-            <field name="resource" ref="game.barracks"></field>
-            <field name="raw" ref="game.food"></field>
-            <field name="level">2</field>
-            <field name="production">-100</field>
-        </record>
-        <record id="game.barracks3_food" model="game.production">
-            <field name="name">Produccion food barracks 3</field>
-            <field name="resource" ref="game.barracks"></field>
-            <field name="raw" ref="game.food"></field>
-            <field name="level">3</field>
-            <field name="production">-500</field>
-        </record>
 
         <!-- Costes -->
         <record id="game.barracks1_coste" model="game.cost">

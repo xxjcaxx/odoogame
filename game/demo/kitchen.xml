@@ -19,50 +19,9 @@ TC9kiLPzAWv7so5Yrd8T1Qvxvg/w3gHOfgKuQlYa8QiojIvvYHe1a5PimuIRID1MuUb7ACkhqalp
             <field name="template">true</field>
             <field name="level">1</field>
             <field name="knowledge">3</field>
+            <field name="produccions" eval="[(6,0,[ref('game.food')] )]"></field>
         </record>
-          <record id="game.kitchen1_food" model="game.production">
-            <field name="name">Produccion food kitchen 1</field>
-            <field name="resource" ref="game.kitchen"></field>
-            <field name="raw" ref="game.food"></field>
-            <field name="level">1</field>
-            <field name="production">1</field>
-        </record>
-        <record id="game.kitchen2_food" model="game.production">
-            <field name="name">Produccion food kitchen 2</field>
-            <field name="resource" ref="game.kitchen"></field>
-            <field name="raw" ref="game.food"></field>
-            <field name="level">2</field>
-            <field name="production">10</field>
-        </record>
-        <record id="game.kitchen3_food" model="game.production">
-            <field name="name">Produccion food kitchen 3</field>
-            <field name="resource" ref="game.kitchen"></field>
-            <field name="raw" ref="game.food"></field>
-            <field name="level">3</field>
-            <field name="production">50</field>
-        </record>
-        <!-- Produccio de ferro -->
-        <record id="game.kitchen1_trigo" model="game.production">
-            <field name="name">Produccion trigo kitchen 1</field>
-            <field name="resource" ref="game.kitchen"></field>
-            <field name="raw" ref="game.trigo"></field>
-            <field name="level">1</field>
-            <field name="production">-2</field>
-        </record>
-        <record id="game.kitchen2_trigo" model="game.production">
-            <field name="name">Produccion trigo kitchen 2</field>
-            <field name="resource" ref="game.kitchen"></field>
-            <field name="raw" ref="game.trigo"></field>
-            <field name="level">2</field>
-            <field name="production">-20</field>
-        </record>
-        <record id="game.kitchen3_trigo" model="game.production">
-            <field name="name">Produccion trigo kitchen 3</field>
-            <field name="resource" ref="game.kitchen"></field>
-            <field name="raw" ref="game.trigo"></field>
-            <field name="level">3</field>
-            <field name="production">-100</field>
-        </record>
+
 
         <!-- Costes -->
         <record id="game.kitchen1_coste" model="game.cost">

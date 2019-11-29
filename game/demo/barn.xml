@@ -25,29 +25,10 @@ AAkA8aSe/ADpnf3kljdSGQAAAABJRU5ErkJggg==
             <field name="template">true</field>
             <field name="level">1</field>
             <field name="knowledge">0</field>
+            <field name="produccions" eval="[(6,0,[ref('game.trigo')] )]"></field>
         </record>
 
-          <record id="game.barn1_trigo" model="game.production">
-            <field name="name">Produccion trigo barn 1</field>
-            <field name="resource" ref="game.barn"></field>
-            <field name="raw" ref="game.trigo"></field>
-            <field name="level">1</field>
-            <field name="production">10</field>
-        </record>
-        <record id="game.barn2_trigo" model="game.production">
-            <field name="name">Produccion trigo barn 2</field>
-            <field name="resource" ref="game.barn"></field>
-            <field name="raw" ref="game.trigo"></field>
-            <field name="level">2</field>
-            <field name="production">100</field>
-        </record>
-        <record id="game.barn3_trigo" model="game.production">
-            <field name="name">Produccion trigo barn 3</field>
-            <field name="resource" ref="game.barn"></field>
-            <field name="raw" ref="game.trigo"></field>
-            <field name="level">3</field>
-            <field name="production">500</field>
-        </record>
+
 
 
         <!-- Costes -->

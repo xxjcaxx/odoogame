@@ -28,7 +28,6 @@ class player(models.Model):
      @api.depends('fortresses')
      def _get_resources(self):
          for player in self:
-
              player.resources = player.fortresses.mapped('resources')
              player.characters = player.fortresses.mapped('characters')
              player.unemployeds = player.fortresses.mapped('characters').filtered(lambda p: p.unemployed == True)
@@ -60,7 +59,8 @@ class player(models.Model):
                  'level' : 1,
                  'fortress': f.id,
                  'parent': c_template.id,
-                 'knowledge': c_template.knowledge
+                 'knowledge': c_template.knowledge,
+                 'produccions': [(6,0,c_template.produccions.ids)]
              })
              c_template = self.env.ref('game.barn')
              c = self.env['game.resource'].create({
@@ -70,7 +70,8 @@ class player(models.Model):
                  'level': 1,
                  'fortress': f.id,
                  'parent': c_template.id,
-                 'knowledge': c_template.knowledge
+                 'knowledge': c_template.knowledge,
+                 'produccions': [(6,0,c_template.produccions.ids)]
              })
              c_template = self.env.ref('game.kitchen')
              c = self.env['game.resource'].create({
@@ -80,7 +81,8 @@ class player(models.Model):
                  'level': 1,
                  'fortress': f.id,
                  'parent': c_template.id,
-                 'knowledge': c_template.knowledge
+                 'knowledge': c_template.knowledge,
+                 'produccions': [(6,0,c_template.produccions.ids)]
              })
              for i in p.raws:
                  i.unlink()
@@ -111,22 +113,9 @@ class player(models.Model):
              if r.minutes_left > 0:
                  r.minutes_left = r.minutes_left - 1
              else:
-                 productions = r.current_productions
-                 c_productions = json.loads(r.characters_productions)
-                 for p in productions:  # La llista de les produccions d'aquest recurs
-                     raws = r.fortress.player.raws.filtered(lambda r: r.raw.id == p.raw.id)  # El raws del player que es d'aquesta produccio
-                     if len(raws) == 0:
-                         raws = self.env['game.raws'].create({'name': p.raw.name,'player':r.fortress.player.id,'raw':p.raw.id,'quantity':0})
-                     for i in raws:
-                         q = i.quantity + p.production
-                         # ara cal calcular la produccio dels characters:
-                         characters_increment = c_productions[str(i.raw.id)]
-                         q = q + characters_increment
-                         #print(str(i.name)+" "+str(q))
-                         i.write({'quantity': q})
-
+                 # productions = r.current_productions
+                 r.produce()
                  # Les investigacions
-
                  for research in r.researches.filtered(lambda s: s.minutes_left > 0):
                      research.write({'minutes_left': research.minutes_left - 1})
                      print('Updating researches')
@@ -206,27 +195,24 @@ class player(models.Model):
        for p in self:
          if p.max_fortresses > len(p.fortresses):
              f_template = self.env.ref('game.fortress1')
+             names = ["Ardglass", "Abingdon", "Swindlincote", "Rotherham", "Far Water", "Todmorden", "Walden",
+                      "Lanercoast", "Aempleforth", "Barkamsted", "Swindmore", "Mountmend", "Dalmellington", "Blencogo",
+                      "Beggar's Hole", "Faversham", "Lindow", "Dungannon", "Doveport", "Peterbrugh", "Limesvilles",
+                      "Grimsby", "Thralkeld", "Dawsbury", "Rotherhithe", "Pavv", "Holmfirth", "Dalmellington",
+                      "Eastcliff", "Bleakburn"]
              f = self.env['game.fortress'].create({
-                 'name': 'Choose the name of your fortress',
+                 'name': str(random.choice(names)),
                  'image': f_template.image,
                  'template': False,
                  'level': 1,
                  'player': p.id
              })
-             c_template = self.env.ref('game.cantera')
-             c = self.env['game.resource'].create({
-                 'name': 'Cantera',
-                 'image': c_template.image,
-                 'template': False,
-                 'level': 1,
-                 'fortress': f.id,
-                 'parent': c_template.id
-             })
+
 
 class fortress(models.Model):
     _name = 'game.fortress'
     name = fields.Char()
-    player = fields.Many2one('game.player')
+    player = fields.Many2one('game.player', ondelete='cascade')
     image = fields.Binary()
     image_small = fields.Binary(string='Image',compute='_get_images', store=True)
     template = fields.Boolean()
@@ -268,16 +254,15 @@ class fortress(models.Model):
 class resource(models.Model):
     _name = 'game.resource'
     name = fields.Char()
-    productions = fields.One2many('game.production','resource') # Llista de coses que produeix
-                                                                # o consumeix
+    produccions = fields.Many2many('game.raw')
+    raws_stored = fields.One2many('game.raws_resource','resource')
     costs = fields.One2many('game.cost','resource')
     durations = fields.One2many('game.duration', 'resource')
-    productions_child = fields.One2many(related='parent.productions')
     costs_child = fields.One2many(related='parent.costs')
     durations_child = fields.One2many(related='parent.durations')
     image = fields.Binary()
     image_small = fields.Binary(compute='_get_images', store=True)
-    fortress = fields.Many2one('game.fortress')
+    fortress = fields.Many2one('game.fortress', ondelete='cascade')
     level = fields.Integer()
     template = fields.Boolean()
     parent = fields.Many2one('game.resource', domain="[('template', '=', True)]")
@@ -288,17 +273,12 @@ class resource(models.Model):
     characters = fields.One2many('game.character','resource')
     researches = fields.One2many('game.research','resource')
     inactive = fields.Boolean(compute='_get_inactive')
-    current_productions = fields.Many2many('game.production', compute='_get_productions')
     current_productionsk = fields.Char(compute='_get_productions')
-    characters_productions = fields.Char(compute='_get_productions')
-
-
+    characters_productions = fields.Float(compute='_get_productions')
     color = fields.Integer(compute='_get_color')
-
-
     # El resource pot ser a medida. L'usuari el crea definint el que consumeix i el que produeix
     custom_production = fields.Many2one('game.raw')
-    raws_stored = fields.One2many('game.raws_resource','resource')
+
 
     @api.multi
     def _get_color(self):
@@ -332,38 +312,59 @@ class resource(models.Model):
                  r.create({'name': r.name, 'image': r.image, 'fortress': self.env.context['fortress'],
                       'level': 1, 'template': False, 'parent': r.id,
                       'minutes_left': r.durations.filtered(lambda s: s.level == 1).minutes,
-                      'knowledge': r.knowledge
+                      'knowledge': r.knowledge,
+                       'produccions': [(6, 0, r.produccions.ids)]
                       })
+
+    @api.multi
+    def assign_to_resource(self):
+        for r in self:
+            character = self.env['game.character'].browse(self.env.context['character'])
+            character.write({'resource': r.id})
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     @api.multi
     def _get_inactive(self):
         for r in self:
             inactive = False
-            productions_negative = r.productions_child.filtered(lambda p: p.production <= 0 and p.level == r.level)
-            for i in productions_negative:
-                quantity = r.fortress.player.raws.filtered(lambda  p: p.raw.id == i.raw.id).quantity
-                if quantity < -i.production:
-                    inactive = True
-            r.inactive = inactive
+           # productions_negative = r.productions_child.filtered(lambda p: p.production <= 0 and p.level == r.level)
+           # for i in productions_negative:
+           #     quantity = r.fortress.player.raws.filtered(lambda  p: p.raw.id == i.raw.id).quantity
+           #     if quantity < -i.production:
+           #         inactive = True
+           # r.inactive = inactive
 
     @api.multi
     def _get_productions(self):
         for r in self:
-            r.current_productions = r.productions_child.filtered(lambda p: p.level == r.level) # Les produccions del propi edifici
-            characters_productions = {} # Les produccions dels characters
-            for p in r.current_productions:
-                if r.characters and p.production > 0:  # Sols augmenten els caracters la produccio si es positiva
-                    characters_p = sum(cc.mining for cc in r.characters)+1  # suma de les qualitats de minig de cada caracter
-                    characters_increment = math.log(characters_p, 1.1)  # Augment logaritmic
-                    characters_productions[p.raw.id] = characters_increment
-                else:
-                    characters_productions[p.raw.id] = 0
-
-            r.current_productionsk = r.current_productions.mapped(lambda p: str(p.raw.name)+" : "+str(p.production))
-            r.characters_productions = json.dumps(characters_productions)
-            #print(str(r.name)+" "+str(r.current_productions.mapped('production'))+" "+str(characters_productions))
+            r.current_productionsk = " " # r.produccions.mapped(lambda p: str(p.name)+" "+str((r.level*1440)/p.production_cost))
+            characters_increment = 0
+            if r.characters:
+                characters_p = sum(cc.mining for cc in r.characters) + 1
+                characters_increment = math.log(characters_p, 1.1)  # Augment logaritmic
+            r.characters_productions = characters_increment
 
 
+    @api.multi
+    def produce(self):
+        for r in self:
+            productions = r.produccions
+            c_productions = r.characters_productions
+            for p in productions:  # La llista de les produccions d'aquest recurs
+                raws = r.fortress.player.raws.filtered(lambda r: r.raw.id == p.id)  # El raws del player que es d'aquesta produccio
+                if len(raws) == 0:
+                     raws = self.env['game.raws'].create(
+                        {'name': p.name, 'player': r.fortress.player.id, 'raw': p.id, 'quantity': 0})
+                for i in raws:
+                    q = (1440 * r.level) / p.production_cost # Costa més quan millor és el material
+                    print(str(p.name) + " Res Production:   " + str(q))
+                    # ara cal calcular la produccio dels characters:
+                    q = q + (c_productions / p.production_cost)  # Costa més quan millor és el material
+                    print(str(p.name) + " Total production: " + str(q)+" Cost: "+str(p.production_cost))
+                    i.write({'quantity': q + i.quantity})
 
     @api.multi
     def level_up(self):
@@ -374,13 +375,7 @@ class resource(models.Model):
               minutes_left = minutes_left[0].minutes
               r.write({'level': level, 'minutes_left': minutes_left})
 
-class production(models.Model):
-    _name = 'game.production'
-    name = fields.Char()
-    resource = fields.Many2one('game.resource') # Que recurs
-    level = fields.Integer() # Cal indicar el que produeix o consumeix en cada nivell
-    raw = fields.Many2one('game.raw') # Que material
-    production = fields.Float()  # Producció per minut
+
 
 
 class cost(models.Model):
@@ -413,15 +408,27 @@ class raw(models.Model):
     tecnologia = fields.Float()
     medicina = fields.Float()
     energia = fields.Float()
+    production_cost = fields.Float(compute="_get_production_cost", store=True) # Cada raw te un cost de producció en funció de les propietats
+    production_spend = fields.Selection([('1','Construccio'),
+                                         ('2','Armes Blanques'),('3','Armes Foc'),
+                                         ('4','Nutricio'),('5','Tecnologia'),
+                                         ('6','Medicina'),('7','Energia')])
+
+    @api.multi
+    def _get_production_cost(self):
+        for r in self:
+            propietats = [1.1**r.construccio, 1.1**r.armesblanques, 1.1**r.armesfoc, 1.1**r.nutricio, 1.1**r.tecnologia, 1.1**r.medicina, 1.1**r.energia]
+            r.production_cost = sum(propietats)
+            print(r.production_cost)
+
 
 class raws(models.Model):
     _name = 'game.raws'
     name = fields.Char(related='raw.name')
-    player = fields.Many2one('game.player')
+    player = fields.Many2one('game.player', ondelete='cascade')
     raw = fields.Many2one('game.raw')
     quantity = fields.Float()
     production = fields.Float(compute='get_production')
-    spending = fields.Float(compute='get_production')
     total_production = fields.Float(compute='get_production')
     character_production = fields.Float(compute='get_production')
 
@@ -429,30 +436,25 @@ class raws(models.Model):
     def get_production(self):
         for raws in self:
             resources = raws.player.fortresses.mapped('resources').filtered(lambda r: r.minutes_left == 0)
-            productions = self.env['game.production']
-            for r in resources:
-                productions = productions + r.mapped('current_productions').filtered(lambda p: p.raw.id == raws.raw.id)
-            print(str(productions) +' '+ str(raws.raw.id))
-            productions_positive = sum(productions.filtered(lambda p: p.production > 0).mapped('production'))
-            productions_negative = sum(productions.filtered(lambda p: p.production <= 0).mapped('production'))
-            # Calcul de les produccions de caracters
+            production = 0
             c_production = 0
-            #resources = raws.player.fortresses.mapped('resources')
-            for r in resources:
-                c_productions = json.loads(r.characters_productions)
-                if str(raws.raw.id) in c_productions:
-                    c_production = c_production + c_productions[str(raws.raw.id)]
 
-            raws.production = productions_positive
-            raws.spending = productions_negative
+            for resource in resources:
+                if raws.raw.id in resource.produccions.ids:
+                    production = production + ((1440 * resource.level) / raws.raw.production_cost)
+                    c_production = c_production + ( resource.characters_productions / raws.raw.production_cost )
+                    #print(raws.raw.name+" "+resource.name)
+
+
+            raws.production = production
             raws.character_production = c_production
-            raws.total_production = productions_positive + productions_negative + raws.character_production
+            raws.total_production = production + c_production
 
 
 class raws_resource(models.Model):
     _name = 'game.raws_resource'
     name = fields.Char(related='raw.name')
-    resource = fields.Many2one('game.resource')
+    resource = fields.Many2one('game.resource', ondelete='cascade')
     raw = fields.Many2one('game.raw')
     quantity = fields.Float()
     player = fields.Many2one(related='resource.fortress.player')
@@ -470,7 +472,7 @@ class character(models.Model):
     _name = 'game.character'
     name = fields.Char()
     image = fields.Binary()
-    fortress = fields.Many2one('game.fortress')
+    fortress = fields.Many2one('game.fortress', ondelete='cascade')
     science = fields.Float()
     construction = fields.Float()
     mining = fields.Float()
@@ -480,6 +482,7 @@ class character(models.Model):
     resource = fields.Many2one('game.resource') # Falta que no puga ser d'un altre fortress
     stuff = fields.One2many('game.stuff','character')
     unemployed = fields.Boolean(compute = '_get_unemployed')
+    resources_available = fields.One2many(related='fortress.resources', string='Resources available')
 
     def _get_unemployed(self):
         for c in self:
@@ -526,7 +529,7 @@ class character_template(models.Model):
 class research(models.Model):
     _name = 'game.research'
     name = fields.Char()
-    resource = fields.Many2one('game.resource')
+    resource = fields.Many2one('game.resource', ondelete='cascade')
     type = fields.Selection([('1','Weapons'),('2','Chemist'),('3','Nutrition'),('4','Medicine'),('5','Energy')])
     minutes_left = fields.Integer()
     research_percent = fields.Float() # sera computed el % de investigació

@@ -7,7 +7,11 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <field name="fortresses"/>
+                    <field name="fortresses" widget="many2many_tags"/>
+                    <field name="weapons_points"/>
+                    <field name="stuff_points"/>
+                    <field name="gold"/>
+                    <field name="max_fortresses"/>
                 </tree>
             </field>
         </record>
@@ -170,7 +174,7 @@
             <field name="arch" type="xml">
                 <tree decoration-danger="inactive==True">
                     <field name="name"/>
-                    <field name="productions"/>
+                    <field name="produccions"/>
                     <field name="fortress"/>
                     <field name="template"/>
                     <field name="level"/>
@@ -200,6 +204,7 @@
                                 <field name="fortress"/>
                                 <field name="level"/>
                             </group>
+
                         </group>
                         <notebook>
                             <page string="Template">
@@ -210,7 +215,7 @@
                             </page>
                             <page string="Construction" attrs="{'invisible':[('template', '==', False)]}">
                                 <group>
-                                    <field name="productions"/>
+                                    <field name="produccions"/>
                                     <field name="costs"/>
                                     <field name="durations">
                                         <tree>
@@ -226,11 +231,11 @@
 
                             <page string="Construction child" attrs="{'invisible':[('template', '!=', False)]}">
                                 <group>
-                                    <field name="current_productions"/>
+                                    <field name="produccions"/>
                                     <field name="custom_production"/>
                                     <field name="raws_stored"/>
 
-                                    <field name="productions_child"/>
+
                                     <field name="costs_child"/>
                                     <field name="durations_child">
                                         <tree>
@@ -246,8 +251,8 @@
                             </page>
                             <page string="Progress">
                                 <group>
-                                    <field name="minutes_left"/>
-                                    <field name="const_percent" widget="progressbar"/>
+                                    <field name="minutes_left" attrs="{'invisible':[('const_percent', '==', 100)]}"/>
+                                    <field name="const_percent" widget="progressbar" attrs="{'invisible':[('const_percent', '==', 100)]}"/>
                                     <field name="knowledge"/>
                                     <field name="characters" context="{'default_resource':active_id,'default_fortress':fortress}"/>
                                     <field name="researches" context="{'default_resource':active_id}"/>
@@ -267,7 +272,7 @@
                 <kanban>
                     <field name="image_small"/>  <field name="id"/>
                     <field name="name"/>
-                    <field name="productions"/>
+                    <field name="produccions"/>
                     <field name="fortress"/>
                     <field name="template"/>  <field name="color"/>
                     <field name="level"/>
@@ -337,6 +342,8 @@
                     <field name="tecnologia"/>
                     <field name="medicina"/>
                     <field name="energia"/>
+                    <field name="production_cost"/>
+                    <field name="production_spend"/>
                 </tree>
             </field>
         </record>
@@ -359,6 +366,8 @@
                             <field name="tecnologia"/>
                             <field name="medicina"/>
                             <field name="energia"/>
+                            <field name="production_cost"/>
+                            <field name="production_spend"/>
                         </group>
                     </sheet>
                 </form>
