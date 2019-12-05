@@ -43,14 +43,14 @@
       <field name="name">raw list</field>
       <field name="model">game.raws</field>
       <field name="arch" type="xml">
-        <tree decoration-danger="quantity&lt;5" decoration-warning="total_production&lt;0">
+        <tree decoration-danger="quantity&lt;5" decoration-warning="total_production&lt;=0">
           <field name="name"/>
           <field name="player"/>
           <field name="raw"/>
           <field name="quantity"/>
           <field name="production"/><field name="character_production"/>
 
-          <field name="total_production"/>
+          <field name="total_production"/><field name="production_cost"/>
         </tree>
       </field>
     </record>
@@ -68,7 +68,7 @@
               <field name="quantity"/>
               <field name="production"/><field name="character_production"/>
 
-              <field name="total_production"/>
+              <field name="total_production"/><field name="production_cost"/>
             </group></sheet></form>
       </field>
     </record>

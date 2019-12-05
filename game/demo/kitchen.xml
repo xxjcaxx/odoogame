@@ -20,6 +20,7 @@ TC9kiLPzAWv7so5Yrd8T1Qvxvg/w3gHOfgKuQlYa8QiojIvvYHe1a5PimuIRID1MuUb7ACkhqalp
             <field name="level">1</field>
             <field name="knowledge">3</field>
             <field name="produccions" eval="[(6,0,[ref('game.food')] )]"></field>
+            <field name="production_spend">4</field>
         </record>
 
 

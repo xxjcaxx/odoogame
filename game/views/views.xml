@@ -216,6 +216,10 @@
                             <page string="Construction" attrs="{'invisible':[('template', '==', False)]}">
                                 <group>
                                     <field name="produccions"/>
+                                    <field name="custom_production"/>
+                                    <field name="raws_stored"/>
+                                    <field name="production_spend"/>
+
                                     <field name="costs"/>
                                     <field name="durations">
                                         <tree>
@@ -234,6 +238,7 @@
                                     <field name="produccions"/>
                                     <field name="custom_production"/>
                                     <field name="raws_stored"/>
+                                    <field name="production_spend"/>
 
 
                                     <field name="costs_child"/>
@@ -255,7 +260,7 @@
                                     <field name="const_percent" widget="progressbar" attrs="{'invisible':[('const_percent', '==', 100)]}"/>
                                     <field name="knowledge"/>
                                     <field name="characters" context="{'default_resource':active_id,'default_fortress':fortress}"/>
-                                    <field name="researches" context="{'default_resource':active_id}"/>
+                                    <field name="researches" attrs="{'invisible':[('knowledge', '!=', '2')]}" context="{'default_resource':active_id}"/>
                                     <field name="inactive"/>
                                 </group>
                             </page>
@@ -286,7 +291,7 @@
                         <t t-name="kanban-box">
                             <div  t-attf-class="
                             oe_kanban_card
-                            oe_kanban_global_click
+
                             o_kanban_record_has_image_fill
                             #{kanban_color(record.color.raw_value)}" >
                                 <div class="oe_game_kanban_div_image">
@@ -298,7 +303,7 @@
                                 </div>
 
                                 <div class="oe_kanban_details">
-                                    <a type="open"> <h4><field name="name"/></h4>  </a>
+                                    <a type="edit"> <h4><field name="name"/></h4>  </a>
                                     <ul>
                                         <li>Level: <field name="level"/></li>
                                         <li>Fortress: <field name="fortress"/></li>
@@ -330,7 +335,7 @@
             <field name="name">raw list</field>
             <field name="model">game.raw</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree >
                     <field name="name"/>
                     <field name="public_hash"/>
                     <field name="hidden_hash"/>
@@ -343,7 +348,7 @@
                     <field name="medicina"/>
                     <field name="energia"/>
                     <field name="production_cost"/>
-                    <field name="production_spend"/>
+
                 </tree>
             </field>
         </record>
@@ -367,7 +372,7 @@
                             <field name="medicina"/>
                             <field name="energia"/>
                             <field name="production_cost"/>
-                            <field name="production_spend"/>
+
                         </group>
                     </sheet>
                 </form>
@@ -401,6 +406,7 @@
                     <field name="energy"/>
                     <field name="minutes_left"/>
                     <field name="duration"/>
+                    <button type="object" icon="fa-trash-o" string="" name="unlink"/>
                 </tree>
             </field>
         </record>

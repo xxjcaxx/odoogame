@@ -82,7 +82,8 @@ class player(models.Model):
                  'fortress': f.id,
                  'parent': c_template.id,
                  'knowledge': c_template.knowledge,
-                 'produccions': [(6,0,c_template.produccions.ids)]
+                 'produccions': [(6,0,c_template.produccions.ids)],
+                 'production_spend': c_template.production_spend
              })
              for i in p.raws:
                  i.unlink()
@@ -113,75 +114,17 @@ class player(models.Model):
              if r.minutes_left > 0:
                  r.minutes_left = r.minutes_left - 1
              else:
-                 # productions = r.current_productions
+                 # productions
                  r.produce()
                  # Les investigacions
-                 for research in r.researches.filtered(lambda s: s.minutes_left > 0):
-                     research.write({'minutes_left': research.minutes_left - 1})
-                     print('Updating researches')
-                     research.do_research()
-
+                 r.research()
 
          print('Updating characters')
          characters = self.env['game.character'].search([('health','>',0)])
-         for c in characters:
-             age = c.age + 1
-             health = c.health
-             # a partir de 100 anys, quasi segur que moren
-             # 100 anys son 36500 dies, cada dia un minut de joc
-             # un caracter dura com a molt 25 dies de joc
-             # Funcio doble exponencial per a que dure menys de 25 dies
-             p_mort=(1.00000000000001**(age**3.2)-1)/100
-             # print(p_mort)
-             if random.random() < p_mort:
-                 health = 0
-                 print('MORT!'+str(c.name))
-             elif health < 100:
-                 health = health + 1
-             c.write({'health': health,'age':age})
-             if c.resource:
-               if not c.resource.inactive:
-                 level = c.resource.level
-                 k = c.resource.knowledge
-                 if k == '1':   # Barracks
-                     war = c.war + level
-                     c.write({'war': war})
-                 elif k == '2':  # Laboratory
-                     science = c.science + level
-                     c.write({'science': science})
-                 elif k == '3': # Mining
-                     mining = c.mining + level
-                     c.write({'mining': mining})
-                 elif k == '4':
-                     construction = c.construction + level
-                     c.write({'construction': construction})
-                 elif k == '5':
-                     construction = c.construction + level
-                     mining = c.mining + level
-                     c.write({'construction': construction,'mining': mining})
-
+         characters.grow()
 
          fortresses = self.env['game.fortress'].search([])
-         for f in fortresses:
-             n_characters = len(f.characters)
-             if n_characters > 1: # Al menys necessitem una parelleta
-                 probability = n_characters/10000 # Amb 100 caracters, hi ha un 1% de probabilitat de naixer uno nou
-                 #print(probability)
-                 if probability > random.random():
-                     c_template = self.env.ref('game.character_template' + str(random.randint(1, 2)))
-                     c_template2 = self.env.ref('game.character_template' + str(random.randint(1, 12)))
-                     c = self.env['game.character'].create({
-                         'name': c_template2.name,
-                         'image': c_template.image,
-                         'fortress': f.id,
-                         'science': random.randint(1, 20),
-                         'construction': random.randint(1, 20),
-                         'mining': random.randint(1, 20),
-                         'war': random.randint(1, 20),
-                         'health': random.randint(1, 20)
-                     })
-                     print('Growing population '+probability+" "+str(c))
-
+         fortresses.grow_population()
 
          print('Updating stuff')
          stuff = self.env['game.stuff'].search([('minutes_left','>',0)])
@@ -251,6 +194,28 @@ class fortress(models.Model):
             r = self.env['game.resource'].search([('template','=',True)])
             f.available_resources = [(6,0,r.ids)]
 
+    @api.multi
+    def grow_population(self):
+        for f in self:
+            n_characters = len(f.characters)
+            if n_characters > 1:  # Al menys necessitem una parelleta
+                probability = n_characters / 10000  # Amb 100 caracters, hi ha un 1% de probabilitat de naixer uno nou
+                print("Probability to grow: " + str(probability))
+                if probability > random.random():
+                    c_template = self.env.ref('game.character_template' + str(random.randint(1, 2)))
+                    c_template2 = self.env.ref('game.character_template' + str(random.randint(1, 12)))
+                    c = self.env['game.character'].create({
+                        'name': c_template2.name,
+                        'image': c_template.image,
+                        'fortress': f.id,
+                        'science': random.randint(1, 20),
+                        'construction': random.randint(1, 20),
+                        'mining': random.randint(1, 20),
+                        'war': random.randint(1, 20),
+                        'health': random.randint(1, 20)
+                    })
+                    print('Growing population ' + probability + " " + str(c))
+
 class resource(models.Model):
     _name = 'game.resource'
     name = fields.Char()
@@ -271,14 +236,17 @@ class resource(models.Model):
     # En cas de ser barracks o academy o laboratory
     knowledge = fields.Selection([('0','None'),('1','Militar'),('2','Scientific'),('3','Mining'),('4','Construction'),('5','All Skills')])
     characters = fields.One2many('game.character','resource')
-    researches = fields.One2many('game.research','resource')
-    inactive = fields.Boolean(compute='_get_inactive')
+    researches = fields.One2many('game.research','resource',readonly=True)
+    inactive = fields.Boolean(default=False)
     current_productionsk = fields.Char(compute='_get_productions')
     characters_productions = fields.Float(compute='_get_productions')
     color = fields.Integer(compute='_get_color')
     # El resource pot ser a medida. L'usuari el crea definint el que consumeix i el que produeix
     custom_production = fields.Many2one('game.raw')
-
+    production_spend = fields.Selection([('0','Nothing'),('1','Construccio'),
+                                        ('2','Armes Blanques'),('3','Armes Foc'),
+                                        ('4','Nutricio'),('5','Tecnologia'),
+                                        ('6','Medicina'),('7','Energia')], default='0')
 
     @api.multi
     def _get_color(self):
@@ -313,7 +281,8 @@ class resource(models.Model):
                       'level': 1, 'template': False, 'parent': r.id,
                       'minutes_left': r.durations.filtered(lambda s: s.level == 1).minutes,
                       'knowledge': r.knowledge,
-                       'produccions': [(6, 0, r.produccions.ids)]
+                      'produccions': [(6, 0, r.produccions.ids)],
+                      'production_spend': r.production_spend
                       })
 
     @api.multi
@@ -326,16 +295,7 @@ class resource(models.Model):
             'tag': 'reload',
         }
 
-    @api.multi
-    def _get_inactive(self):
-        for r in self:
-            inactive = False
-           # productions_negative = r.productions_child.filtered(lambda p: p.production <= 0 and p.level == r.level)
-           # for i in productions_negative:
-           #     quantity = r.fortress.player.raws.filtered(lambda  p: p.raw.id == i.raw.id).quantity
-           #     if quantity < -i.production:
-           #         inactive = True
-           # r.inactive = inactive
+
 
     @api.multi
     def _get_productions(self):
@@ -344,13 +304,14 @@ class resource(models.Model):
             characters_increment = 0
             if r.characters:
                 characters_p = sum(cc.mining for cc in r.characters) + 1
-                characters_increment = math.log(characters_p, 1.1)  # Augment logaritmic
+                characters_increment = math.log(characters_p, 1.05)  # Augment logaritmic
             r.characters_productions = characters_increment
 
 
     @api.multi
     def produce(self):
         for r in self:
+            # Produccions i gastos en les produccions
             productions = r.produccions
             c_productions = r.characters_productions
             for p in productions:  # La llista de les produccions d'aquest recurs
@@ -364,7 +325,53 @@ class resource(models.Model):
                     # ara cal calcular la produccio dels characters:
                     q = q + (c_productions / p.production_cost)  # Costa més quan millor és el material
                     print(str(p.name) + " Total production: " + str(q)+" Cost: "+str(p.production_cost))
+                    if r.production_spend != '0':
+                        p_spend = r.production_spend
+                        raws_needed = {'0':0,'1': i.raw.construccio, '2': i.raw.armesblanques, '3': i.raw.armesfoc,
+                                       '4': i.raw.nutricio, '5': i.raw.tecnologia, '6':i.raw.medicina, '7': i.raw.energia}
+                        raws_needed = raws_needed[p_spend] * i.raw.production_cost * q
+                        print('Raws needed: '+str(p_spend)+" "+ str(raws_needed))
+                        r._spend(raws_needed)
+
                     i.write({'quantity': q + i.quantity})
+            # Els consums en cas de que no produisca res
+            if (len(productions) == 0 and r.production_spend != '0'):
+                raws_needed = 2**r.level * (len(r.characters)+1)  # El consum depen del nivell i dels ocupants
+                print('Non productive raws needed: '+str(raws_needed))
+                r._spend(raws_needed)
+
+    @api.multi
+    def research(self):
+        for r in self:
+            for research in r.researches.filtered(lambda s: s.minutes_left > 0):
+                research.write({'minutes_left': research.minutes_left - 1})
+                print('Updating researches')
+                research.do_research()
+
+
+    @api.multi
+    def _spend(self,raws_needed):
+        for r in self:
+            raws_stored = r.raws_stored
+            p_spend = r.production_spend
+            for ra in raws_stored:
+                r_properties = {'0': 0, '1': ra.raw.construccio, '2': ra.raw.armesblanques,
+                                '3': ra.raw.armesfoc, '4': ra.raw.nutricio, '5': ra.raw.tecnologia, '6': ra.raw.medicina,
+                                '7': ra.raw.energia}
+                print(r_properties)
+                raw_potential = 1.1 ** r_properties[p_spend]
+
+                raw_spend = raws_needed / raw_potential
+                print(str(raw_potential) + " Raw Spend: " + str(raw_spend))
+                if raw_spend < ra.quantity:
+                    ra.write({'quantity': ra.quantity - raw_spend})
+                    raws_needed = 0
+                else:
+                    ra.write({'quantity': 0})
+                    raws_needed = raws_needed - raw_potential * ra.quantity
+            print(raws_needed)
+            if raws_needed > 0:
+                r.write({'inactive': True})
 
     @api.multi
     def level_up(self):
@@ -376,7 +383,11 @@ class resource(models.Model):
               r.write({'level': level, 'minutes_left': minutes_left})
 
 
-
+    @api.constrains('researches')
+    def _check_researches(self):
+        for r in self:
+            if len(r.researches) > 0 and r.knowledge != '2':
+                raise ValidationError("Your cannot research in this resource")
 
 class cost(models.Model):
     _name = 'game.cost'
@@ -409,10 +420,7 @@ class raw(models.Model):
     medicina = fields.Float()
     energia = fields.Float()
     production_cost = fields.Float(compute="_get_production_cost", store=True) # Cada raw te un cost de producció en funció de les propietats
-    production_spend = fields.Selection([('1','Construccio'),
-                                         ('2','Armes Blanques'),('3','Armes Foc'),
-                                         ('4','Nutricio'),('5','Tecnologia'),
-                                         ('6','Medicina'),('7','Energia')])
+
 
     @api.multi
     def _get_production_cost(self):
@@ -427,15 +435,16 @@ class raws(models.Model):
     name = fields.Char(related='raw.name')
     player = fields.Many2one('game.player', ondelete='cascade')
     raw = fields.Many2one('game.raw')
-    quantity = fields.Float()
+    quantity = fields.Float(digits = (12,5))
     production = fields.Float(compute='get_production')
     total_production = fields.Float(compute='get_production')
     character_production = fields.Float(compute='get_production')
+    production_cost = fields.Float(related='raw.production_cost')
 
     @api.multi
     def get_production(self):
         for raws in self:
-            resources = raws.player.fortresses.mapped('resources').filtered(lambda r: r.minutes_left == 0)
+            resources = raws.player.fortresses.mapped('resources').filtered(lambda r: r.minutes_left == 0 and r.inactive == False)
             production = 0
             c_production = 0
 
@@ -456,7 +465,7 @@ class raws_resource(models.Model):
     name = fields.Char(related='raw.name')
     resource = fields.Many2one('game.resource', ondelete='cascade')
     raw = fields.Many2one('game.raw')
-    quantity = fields.Float()
+    quantity = fields.Float(digits = (12,5))
     player = fields.Many2one(related='resource.fortress.player')
 
 
@@ -484,6 +493,44 @@ class character(models.Model):
     unemployed = fields.Boolean(compute = '_get_unemployed')
     resources_available = fields.One2many(related='fortress.resources', string='Resources available')
 
+    @api.multi
+    def grow(self):
+        for c in self:
+            age = c.age + 1
+            health = c.health
+            # a partir de 100 anys, quasi segur que moren
+            # 100 anys son 36500 dies, cada dia un minut de joc
+            # un caracter dura com a molt 25 dies de joc
+            # Funcio doble exponencial per a que dure menys de 25 dies
+            p_mort = (1.00000000000001 ** (age ** 3.2) - 1) / 100
+            # print(p_mort)
+            if random.random() < p_mort:
+                health = 0
+                print('MORT!' + str(c.name))
+            elif health < 100:
+                health = health + 1
+            c.write({'health': health, 'age': age})
+            if c.resource:
+                if not c.resource.inactive:
+                    level = c.resource.level
+                    k = c.resource.knowledge
+                    if k == '1':  # Barracks
+                        war = c.war + level
+                        c.write({'war': war})
+                    elif k == '2':  # Laboratory
+                        science = c.science + level
+                        c.write({'science': science})
+                    elif k == '3':  # Mining
+                        mining = c.mining + level
+                        c.write({'mining': mining})
+                    elif k == '4':
+                        construction = c.construction + level
+                        c.write({'construction': construction})
+                    elif k == '5':
+                        construction = c.construction + level
+                        mining = c.mining + level
+                        c.write({'construction': construction, 'mining': mining})
+
     def _get_unemployed(self):
         for c in self:
             if len(c.resource) == 0:
@@ -500,23 +547,6 @@ class character(models.Model):
         c_template = self.env.ref('game.character_template' + str(random.randint(1, 3)))
         self.image = c_template.image
 
-
-    @api.onchange('science')
-    def check_science(self):
-        if self.science > 100:
-            self.science = 100
-            return {
-                'warning': {
-                    'title': "Science",
-                    'message': "You can't put more than 100",
-                }
-            }
-
-    @api.constrains('science')
-    def check_constrain_science(self):
-        for c in self:
-          if c.science > 100:
-            raise ValidationError("Too much science!! %s" % c.science)
 
 
 class character_template(models.Model):

@@ -31,7 +31,8 @@ PWr5pwAAQTAPLJaUxS8LAGPDA4s92tmnAsBkw8sBcLvd/hVFAWus8/kM5/N5lWttuW632z8EQAKA
 </field>
             <field name="template">true</field>
             <field name="level">1</field>
-            <field name="knowledge">1</field>
+            <field name="knowledge">4</field>
+            <field name="production_spend">0</field>
         </record>
  <!-- Costes -->
         <record id="game.armory1_coste" model="game.cost">
