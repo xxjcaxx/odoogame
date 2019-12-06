@@ -10,6 +10,7 @@
                     <field name="fortresses" widget="many2many_tags"/>
                     <field name="weapons_points"/>
                     <field name="stuff_points"/>
+                    <field name="food_points"/>
                     <field name="gold"/>
                     <field name="max_fortresses"/>
                 </tree>
@@ -31,6 +32,7 @@
                             <group string="Levels">
                                 <field name="weapons_points"/>
                                 <field name="stuff_points"/>
+                                <field name="food_points"/>
                                 <field name="gold"/>
                                 <field name="max_fortresses"/>
                             </group><!-- Candidat a widget-->
@@ -258,10 +260,19 @@
                                 <group>
                                     <field name="minutes_left" attrs="{'invisible':[('const_percent', '==', 100)]}"/>
                                     <field name="const_percent" widget="progressbar" attrs="{'invisible':[('const_percent', '==', 100)]}"/>
-                                    <field name="knowledge"/>
                                     <field name="characters" context="{'default_resource':active_id,'default_fortress':fortress}"/>
-                                    <field name="researches" attrs="{'invisible':[('knowledge', '!=', '2')]}" context="{'default_resource':active_id}"/>
                                     <field name="inactive"/>
+                                </group>
+                            </page>
+                            <page string="Knowledge">
+                                <group>
+                                    <field name="knowledge"/>
+                                    <field name="researches" attrs="{'invisible':[('knowledge', '!=', '2')]}" context="{'default_resource':active_id}"/>
+                                    <button name="new_research" type="object" string="Research in Weapons" context="{'type':'1'}"></button>
+                                    <button name="new_research" type="object" string="Research in Chemistry" context="{'type':'2'}"></button>
+                                    <button name="new_research" type="object" string="Research in Nutrition" context="{'type':'3'}"></button>
+                                    <button name="new_research" type="object" string="Research in Medicine" context="{'type':'4'}"></button>
+                                    <button name="new_research" type="object" string="Research in Energy" context="{'type':'5'}"></button>
                                 </group>
                             </page>
                         </notebook>

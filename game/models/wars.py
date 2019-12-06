@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, tools
 import random
+from datetime import datetime, timedelta
 import math
 
 
@@ -40,8 +41,25 @@ class battle(models.Model):
     defend = fields.Many2many('game.player', 'player_defends')
     characters_attack = fields.Many2many('game.character','characters_attack')
     characters_defend = fields.Many2many('game.character','characters_defend')
-    date = fields.Datetime() # Serà calculada a partir de l'hora de creació
+    def _get_date(self):
+        date = datetime.now()+timedelta(hours=3)
+        return fields.Datetime.to_string(date)
+
+    date = fields.Datetime(default=_get_date) # Serà calculada a partir de l'hora de creació
     finished = fields.Boolean()
+
+
+    @api.onchange('attack','defend')
+    def onchange_attack(self):
+        for b in self:
+            characters_available = b.attack.mapped('fortresses').mapped('characters').filtered(
+                lambda p: p.unemployed==True and p.health > 0)
+            characters_available_defense = b.defend.mapped('fortresses').mapped('characters').filtered(
+                lambda p: p.unemployed == True and p.health > 0)
+            return {
+                'domain': {'characters_attack': [('id', 'in', characters_available.ids)],
+                           'characters_defend': [('id', 'in', characters_available_defense.ids)]},
+            }
 
     def compute_battle(self):
         for b in self:

@@ -216,7 +216,7 @@
           <field name="resource"/>
           <field name="type"/>
           <field name="minutes_left"/>
-          <field name="research_percent"/>
+          <field name="research_percent" widget="progressbar"/>
         </tree>
       </field>
     </record>

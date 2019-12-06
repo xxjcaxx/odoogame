@@ -2,7 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_game_player,game.player,model_game_player,,1,1,1,1
 access_game_fortress,game.fortress,model_game_fortress,,1,1,1,1
 access_game_resource,game.resource,model_game_resource,,1,1,1,1
-access_game_production,game.production,model_game_production,,1,1,1,1
 access_game_raw,game.raw,model_game_raw,,1,1,1,1
 access_game_raws,game.raws,model_game_raws,,1,1,1,1
 access_game_raws_resource,game.raws_resource,model_game_raws_resource,,1,1,1,1

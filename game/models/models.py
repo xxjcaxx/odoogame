@@ -19,7 +19,8 @@ class player(models.Model):
      unemployeds = fields.Many2many('game.character', compute='_get_resources')
 
      weapons_points = fields.Integer()  #Els punts a repartir en cada arma
-     stuff_points = fields.Integer()  # Els punts a repartir en cada stuff
+     stuff_points = fields.Integer()    #Els punts a repartir en cada stuff
+     food_points = fields.Integer()     #El nivell de tecnologia de menjar
      gold = fields.Float(default=100.0)
      max_fortresses = fields.Integer(default=1)
 
@@ -343,6 +344,7 @@ class resource(models.Model):
     @api.multi
     def research(self):
         for r in self:
+            print(r.researches)
             for research in r.researches.filtered(lambda s: s.minutes_left > 0):
                 research.write({'minutes_left': research.minutes_left - 1})
                 print('Updating researches')
@@ -356,9 +358,11 @@ class resource(models.Model):
             p_spend = r.production_spend
             for ra in raws_stored:
                 r_properties = {'0': 0, '1': ra.raw.construccio, '2': ra.raw.armesblanques,
-                                '3': ra.raw.armesfoc, '4': ra.raw.nutricio, '5': ra.raw.tecnologia, '6': ra.raw.medicina,
+                                '3': ra.raw.armesfoc,
+                                '4': ra.raw.nutricio+(r.fortress.player.food_points**2), # Els punts de nutrició del player fan que siga més eficient el RAW
+                                '5': ra.raw.tecnologia, '6': ra.raw.medicina,
                                 '7': ra.raw.energia}
-                print(r_properties)
+                print("Propietats del RAW: "+str(r_properties))
                 raw_potential = 1.1 ** r_properties[p_spend]
 
                 raw_spend = raws_needed / raw_potential
@@ -381,6 +385,16 @@ class resource(models.Model):
             if minutes_left:
               minutes_left = minutes_left[0].minutes
               r.write({'level': level, 'minutes_left': minutes_left})
+
+    @api.multi
+    def new_research(self):
+        for r in self:
+            type = self.env.context['type']
+            self.env['game.research'].create({
+                'resource': r.id,
+                'type': type,
+                'minutes_left': 1440/r.level
+            })
 
 
     @api.constrains('researches')
@@ -419,7 +433,7 @@ class raw(models.Model):
     tecnologia = fields.Float()
     medicina = fields.Float()
     energia = fields.Float()
-    production_cost = fields.Float(compute="_get_production_cost", store=True) # Cada raw te un cost de producció en funció de les propietats
+    production_cost = fields.Float(compute="_get_production_cost") # Cada raw te un cost de producció en funció de les propietats
 
 
     @api.multi
@@ -427,7 +441,7 @@ class raw(models.Model):
         for r in self:
             propietats = [1.1**r.construccio, 1.1**r.armesblanques, 1.1**r.armesfoc, 1.1**r.nutricio, 1.1**r.tecnologia, 1.1**r.medicina, 1.1**r.energia]
             r.production_cost = sum(propietats)
-            print(r.production_cost)
+            # print(r.production_cost)
 
 
 class raws(models.Model):
@@ -562,8 +576,17 @@ class research(models.Model):
     resource = fields.Many2one('game.resource', ondelete='cascade')
     type = fields.Selection([('1','Weapons'),('2','Chemist'),('3','Nutrition'),('4','Medicine'),('5','Energy')])
     minutes_left = fields.Integer()
-    research_percent = fields.Float() # sera computed el % de investigació
+    research_percent = fields.Float(compute='get_percent') # sera computed el % de investigació
     result = fields.Char()
+
+    @api.depends('minutes_left')
+    def get_percent(self):
+        for r in self:
+            total_time = 1440/r.resource.level
+            #print(total_time)
+            if total_time > 0:
+                r.research_percent = 100 - (r.minutes_left / total_time) * 100
+
 
     @api.multi
     def do_research(self):
@@ -595,6 +618,12 @@ class research(models.Model):
                    print('Discovered: '+ str(new_raw))
             if r.type == '3':
                 print('millora en nutricio')
+                character_skills = sum(r.resource.characters.mapped('science'))
+                food_points = r.resource.fortress.player.weapons_points
+                ratio_skills_points = math.ceil(character_skills/(food_points+1))+1
+                points_extra = random.randint(0,ratio_skills_points)
+                r.resource.fortress.player.write({'food_points': food_points + points_extra})
+                r.write({'result': str(points_extra)+' Points extra in Food Points \n Ratio Skills/Food points: '+str(ratio_skills_points)})
             if r.type == '4':
                 print('millora en medicina')
             if r.type == '5':
