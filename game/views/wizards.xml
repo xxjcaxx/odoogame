@@ -1,0 +1,47 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="game.add_raws_wizard">
+            <field name="name">wizard add raws </field>
+            <field name="model">game.add_raws</field>
+            <field name="arch" type="xml">
+                <form string="Select fortress">
+                    <group>
+                        <field name="resource"/>
+                        <field name="productions">
+                            <tree>
+                                <field name="name"/>
+                                <field name="construccio"/>
+                                <field name="armesblanques"/>
+                                <field name="armesfoc"/>
+                                <field name="nutricio"/>
+                                <field name="tecnologia"/>
+                                <field name="medicina"/>
+                                <field name="energia"/>
+                                <field name="production_cost"/>
+                            </tree>
+                        </field>
+
+                        <field name="production_spend"/>
+                                                <field name="need"/>
+
+                    </group>
+                    <footer>
+                        <button name="launch" type="object"
+                                string="Launch" class="oe_highlight"/>
+                        or
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <act_window id="game.launch_add_raws_wizard"
+                    name="Launch add raws"
+                    src_model="game.resource"
+                    res_model="game.add_raws"
+                    view_mode="form"
+                    target="new"
+        />
+    </data>
+</odoo>

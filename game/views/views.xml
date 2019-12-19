@@ -311,6 +311,8 @@
                                          t-att-src="kanban_image('game.resource', 'image_small', record.id.value)"/>
                                     <button name="level_up" type="object" string="Level"
                                             class="oe_game_kanban_button">Level UP</button>
+                                    <button name="%(game.launch_add_raws_wizard)d" type="action" string="Level"
+                                            class="oe_game_kanban_button">Add raws</button>
                                 </div>
 
                                 <div class="oe_kanban_details">

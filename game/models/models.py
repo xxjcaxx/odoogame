@@ -380,11 +380,12 @@ class resource(models.Model):
     @api.multi
     def level_up(self):
         for r in self:
-            level = r.level + 1
-            minutes_left = r.durations_child.filtered(lambda d: d.level == level)
-            if minutes_left:
-              minutes_left = minutes_left[0].minutes
-              r.write({'level': level, 'minutes_left': minutes_left})
+            if r.minutes_left == 0:
+                level = r.level + 1
+                minutes_left = r.durations_child.filtered(lambda d: d.level == level)
+                if minutes_left:
+                  minutes_left = minutes_left[0].minutes
+                  r.write({'level': level, 'minutes_left': minutes_left})
 
     @api.multi
     def new_research(self):

@@ -36,4 +36,60 @@
 
 .oe_game_kanban_button {
  font-size: 10px;
+ background-color: rgb(255, 255, 255);
+border-bottom-color: rgb(222, 226, 230);
+border-bottom-left-radius: 3px;
+border-bottom-right-radius: 3px;
+border-bottom-style: solid;
+border-bottom-width: 1px;
+border-image-outset: 0;
+border-image-repeat: stretch;
+border-image-slice: 100%;
+border-image-source: none;
+border-image-width: 1;
+border-left-color: rgb(222, 226, 230);
+border-left-style: solid;
+border-left-width: 1px;
+border-right-color: rgb(222, 226, 230);
+border-right-style: solid;
+border-right-width: 1px;
+border-top-color: rgb(222, 226, 230);
+border-top-left-radius: 3px;
+border-top-right-radius: 3px;
+border-top-style: solid;
+border-top-width: 1px;
+box-sizing: border-box;
+color: rgb(33, 37, 41);
+cursor: pointer;
+direction: ltr;
+display: inline-block;
+font-family: "Noto", "Lucida Grande", Helvetica, Verdana, Arial, sans-serif;
+font-size: 13px;
+font-weight: 400;
+line-height: 19.5px;
+margin-bottom: 0px;
+margin-left: 0px;
+margin-right: 0px;
+margin-top: 0px;
+overflow: visible;
+overflow-x: visible;
+overflow-y: visible;
+padding-bottom: 4.5px;
+padding-left: 9px;
+padding-right: 9px;
+padding-top: 4.5px;
+text-align: center;
+text-transform: none;
+transition-delay: 0s, 0s, 0s, 0s;
+transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+transition-property: color, background-color, border-color, box-shadow;
+transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+user-select: none;
+vertical-align: middle;
+white-space: nowrap;
+-moz-appearance: button;
+}
+.oe_game_kanban_button:hover {
+background-color: rgb(200, 200, 200);
+
 }
