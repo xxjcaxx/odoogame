@@ -61,20 +61,43 @@
       <field name="model">game.battle</field>
       <field name="arch" type="xml">
         <form>
+          <header><field name="state" widget="statusbar"/></header>
           <sheet>
             <group>
               <field name="name"/>
-              <field name="attack"/>
-              <field name="characters_attack" attrs="{'invisible': [('attack', '=', [])],
-                           'readonly': [('attack','=',[])]}" />
-              <field name="defend"/>
-              <field name="characters_defend" attrs="{'invisible': [('defend', '=', [])],
-                           'readonly': [('defend','=',[])]}"/>
               <field name="date"/>
               <field name="finished"/>
-              <button name="compute_battle" type="object" string="Compute Battle" class="oe_highlight" />
+            </group>
+            <notebook><page string="Attack">
+              <group>
+                <field name="attack" mode="kanban"/>
+                <field name="characters_attack" attrs="{'invisible': [('attack', '=', [])],
+                           'readonly': [('attack','=',[])]}" >
+                  <tree>
+                    <field name="name"/><field name="player"/>
+                    <field name="fortress"/><field name="war"/><field name="age"/>
+                    <field name="health"/><field name="resource"/>
+                  </tree>
+                </field>
+              </group>
+            </page>
+              <page string="Defend">
+                <group>
+                  <field name="defend" mode="kanban"/>
+                  <field name="characters_defend" attrs="{'invisible': [('defend', '=', [])],
+                           'readonly': [('defend','=',[])]}" >
+                    <tree>
+                      <field name="name"/><field name="player"/>
+                      <field name="fortress"/><field name="war"/><field name="age"/>
+                      <field name="health"/><field name="resource"/>
+                    </tree>
+                  </field>
+                </group>
+              </page>
 
-            </group></sheet></form>
+            </notebook>
+            <button name="compute_battle" type="object" string="Compute Battle" class="oe_highlight" />
+          </sheet></form>
       </field>
     </record>
 
@@ -98,6 +121,56 @@
 
     <menuitem name="Battle" id="game.menu_battle" parent="game.menu_1"
               action="game.battle_action_window"/>
+
+
+    <record model="ir.ui.view" id="game.clan_list">
+      <field name="name">clan list</field>
+      <field name="model">game.clan</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="players" widget="many2many_tags"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.clan_form">
+      <field name="name">clan form</field>
+      <field name="model">game.clan</field>
+      <field name="arch" type="xml">
+        <form>
+
+          <sheet>
+            <group>
+              <field name="name"/>
+
+              <field name="image" widget="image" class="oe_edit_only"/>
+              <field name="image_small" widget="image" class="oe_read_only"/>
+            </group>
+            <notebook><page string="Players">
+              <group>
+                <field name="players" mode="kanban"/>
+              </group>
+            </page>
+              <page string="battles">
+                <group>
+                  <field name="battles"/>
+                </group>
+              </page>
+            </notebook>
+          </sheet></form>
+      </field>
+    </record>
+    >
+
+    <record model="ir.actions.act_window" id="game.clan_action_window">
+      <field name="name">clan window</field>
+      <field name="res_model">game.clan</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Clan" id="game.menu_clan" parent="game.menu_1"
+              action="game.clan_action_window"/>
 
   </data>
 </odoo>

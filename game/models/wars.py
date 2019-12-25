@@ -4,7 +4,7 @@ from odoo import models, fields, api, tools
 import random
 from datetime import datetime, timedelta
 import math
-
+from openerp.exceptions import ValidationError
 
 ############### El mercat del joc ##############
 
@@ -28,8 +28,16 @@ class clan(models.Model):
     _name = 'game.clan'
     name = fields.Char()
     image = fields.Binary()
+    image_small = fields.Binary(string='Clan Image', compute='_get_images', store=True)
     players = fields.One2many('game.player','clan')
     battles = fields.Many2many('game.battle')
+
+    @api.depends('image')
+    def _get_images(self):
+        for i in self:
+            image = i.image
+            data = tools.image_get_resized_images(image)
+            i.image_small = data["image_small"]
 
 
 ########## Les batalles #########################
@@ -37,10 +45,11 @@ class clan(models.Model):
 class battle(models.Model):
     _name = 'game.battle'
     name = fields.Char()
-    attack = fields.Many2many('game.player', 'player_attacks') # Cal especificar el nom de la taula
-    defend = fields.Many2many('game.player', 'player_defends')
-    characters_attack = fields.Many2many('game.character','characters_attack')
-    characters_defend = fields.Many2many('game.character','characters_defend')
+    attack = fields.Many2many('game.player', relation='player_attacks', column1='b_a',column2='p_a') # Cal especificar el nom de la taula
+    defend = fields.Many2many('game.player', relation='player_defends', column1='b_d',column2='p_d')
+    characters_attack = fields.Many2many('game.character',relation='characters_attack')
+    characters_defend = fields.Many2many('game.character',relation='characters_defend')
+    state = fields.Selection([('1','Creation'),('2','Character Selection'),('3','Waiting'),('4','Finished')], compute='_get_state')
     def _get_date(self):
         date = datetime.now()+timedelta(hours=3)
         return fields.Datetime.to_string(date)
@@ -56,10 +65,57 @@ class battle(models.Model):
                 lambda p: p.unemployed==True and p.health > 0)
             characters_available_defense = b.defend.mapped('fortresses').mapped('characters').filtered(
                 lambda p: p.unemployed == True and p.health > 0)
-            return {
+            check = b._check_battle()
+
+            result = {
                 'domain': {'characters_attack': [('id', 'in', characters_available.ids)],
-                           'characters_defend': [('id', 'in', characters_available_defense.ids)]},
+                           'characters_defend': [('id', 'in', characters_available_defense.ids)],
+                           'attack': [('id','not in', b.defend.ids)], 'defend': [('id','not in', b.attack.ids)],
+                           },
             }
+            if not check[0]:
+                warning = {'title': "Battle not valid", 'message': check[1]}
+                result['warning'] = warning
+            return result
+
+    # Funció privada cridada tant per el onchenge com per els constrains
+    def _check_battle(self):
+        result = [True,'']  # True és correcta i el missatge en cas de incorrecta
+        attackers = self.attack
+        defenders = self.defend
+        if len(attackers) > 0 and len(defenders) > 0:
+            # Tots els atacants i defensors han d'estar en el mateix clan
+            if len(attackers.mapped('clan')) > 1:
+                result = [False,'All attackers have to be the same clan']
+                return result
+            if len(defenders.mapped('clan')) > 1:
+                result = [False,'All attackers have to be the same clan']
+                return result
+            if defenders[0].clan == attackers[0].clan:
+                result = [False,'One clan cannot attack himself']
+                return result
+
+            # Tots els caracters atacants ha de ser de jugadors atacants
+            if defenders.ids != self.characters_defend.mapped('player.id'):
+                result = [False,'All the characters have to be from defender players']
+                return result
+            if attackers.ids != self.characters_attack.mapped('player.id'):
+                result = [False,'All the characters have to be from attacker players']
+                return result
+        return result
+
+
+
+    @api.multi
+    def _get_state(self):
+        for b in self:
+            b.state = '1'
+            if len(b.attack) > 0 and len(b.defend) > 0:
+                b.state = '2'
+            if len(b.characters_attack) > 0 and len(b.characters_defend) > 0:
+                b.state = '3'
+            if b.finished == True:
+                b.state = '4'
 
     def compute_battle(self):
         for b in self:

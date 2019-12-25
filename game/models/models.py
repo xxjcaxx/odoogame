@@ -11,6 +11,7 @@ class player(models.Model):
      _name = 'game.player'
      name = fields.Char()
      image = fields.Binary()
+     image_small = fields.Binary(compute='_get_images',store=True)
      fortresses = fields.One2many('game.fortress','player')
      fortressesk = fields.One2many(related='fortresses') # Per al kanban
      resources = fields.Many2many('game.resource', compute='_get_resources')
@@ -25,6 +26,16 @@ class player(models.Model):
      max_fortresses = fields.Integer(default=1)
 
      clan = fields.Many2one('game.clan')
+     clan_image = fields.Binary(related='clan.image_small')
+     battles_as_attack = fields.Many2many('game.battle',relation='player_attacks', column1='p_a',column2='b_a')
+     battles_as_defense = fields.Many2many('game.battle', relation='player_defends', column1='p_d',column2='b_d')
+
+     @api.depends('image')
+     def _get_images(self):
+         for i in self:
+             image = i.image
+             data = tools.image_get_resized_images(image)
+             i.image_small = data["image_small"]
 
      @api.depends('fortresses')
      def _get_resources(self):
@@ -109,30 +120,33 @@ class player(models.Model):
 
 
      def update_resources(self):
-         print('\033[95m'+'Updating resources')
+         print('Updating resources')
+         log = 'Updating resources'
          resources = self.env['game.resource'].search([('template', '=', False)]) # Busca els recursos que no son template
          for r in resources.filtered(lambda r: r.inactive == False ):
              if r.minutes_left > 0:
                  r.minutes_left = r.minutes_left - 1
              else:
                  # productions
-                 r.produce()
+                 log = log +" "+ r.produce()
                  # Les investigacions
-                 r.research()
+                 log = log + " " + r.research()
 
          print('Updating characters')
+         log = log + ' Updating characters'
          characters = self.env['game.character'].search([('health','>',0)])
          characters.grow()
 
          fortresses = self.env['game.fortress'].search([])
-         fortresses.grow_population()
+         log = log + fortresses.grow_population()
 
          print('Updating stuff')
+         log = log + 'Updating stuff'
          stuff = self.env['game.stuff'].search([('minutes_left','>',0)])
          for s in stuff:
              s.write({'minutes_left': s.minutes_left - 1})
 
-         print(' \033[0m')
+         self.env['game.log'].create({'title': 'Update' ,'description' : log})
 
      @api.multi
      def create_new_fortress(self):
@@ -197,11 +211,12 @@ class fortress(models.Model):
 
     @api.multi
     def grow_population(self):
+        log = ''
         for f in self:
             n_characters = len(f.characters)
             if n_characters > 1:  # Al menys necessitem una parelleta
                 probability = n_characters / 10000  # Amb 100 caracters, hi ha un 1% de probabilitat de naixer uno nou
-                print("Probability to grow: " + str(probability))
+                log = log + "Probability to grow: " + str(probability)
                 if probability > random.random():
                     c_template = self.env.ref('game.character_template' + str(random.randint(1, 2)))
                     c_template2 = self.env.ref('game.character_template' + str(random.randint(1, 12)))
@@ -215,7 +230,8 @@ class fortress(models.Model):
                         'war': random.randint(1, 20),
                         'health': random.randint(1, 20)
                     })
-                    print('Growing population ' + probability + " " + str(c))
+                    log = log + 'Growing population ' + probability + " " + str(c)
+        return log
 
 class resource(models.Model):
     _name = 'game.resource'
@@ -311,6 +327,7 @@ class resource(models.Model):
 
     @api.multi
     def produce(self):
+        log = 'produce: '
         for r in self:
             # Produccions i gastos en les produccions
             productions = r.produccions
@@ -322,33 +339,36 @@ class resource(models.Model):
                         {'name': p.name, 'player': r.fortress.player.id, 'raw': p.id, 'quantity': 0})
                 for i in raws:
                     q = (1440 * r.level) / p.production_cost # Costa més quan millor és el material
-                    print(str(p.name) + " Res Production:   " + str(q))
+                    log = log +" "+ str(p.name) + " Res Production:   " + str(q)
                     # ara cal calcular la produccio dels characters:
                     q = q + (c_productions / p.production_cost)  # Costa més quan millor és el material
-                    print(str(p.name) + " Total production: " + str(q)+" Cost: "+str(p.production_cost))
+                    log = log +" "+ str(p.name) + " Total production: " + str(q)+" Cost: "+str(p.production_cost)
                     if r.production_spend != '0':
                         p_spend = r.production_spend
                         raws_needed = {'0':0,'1': i.raw.construccio, '2': i.raw.armesblanques, '3': i.raw.armesfoc,
                                        '4': i.raw.nutricio, '5': i.raw.tecnologia, '6':i.raw.medicina, '7': i.raw.energia}
                         raws_needed = raws_needed[p_spend] * i.raw.production_cost * q
-                        print('Raws needed: '+str(p_spend)+" "+ str(raws_needed))
+                        log = log +" "+ 'Raws needed: '+str(p_spend)+" "+ str(raws_needed)
                         r._spend(raws_needed)
 
                     i.write({'quantity': q + i.quantity})
             # Els consums en cas de que no produisca res
             if (len(productions) == 0 and r.production_spend != '0'):
                 raws_needed = 2**r.level * (len(r.characters)+1)  # El consum depen del nivell i dels ocupants
-                print('Non productive raws needed: '+str(raws_needed))
+                log = log +" "+  'Non productive raws needed: '+str(raws_needed)
                 r._spend(raws_needed)
+        return log
 
     @api.multi
     def research(self):
+        log = ''
         for r in self:
-            print(r.researches)
+            #print(r.researches)
             for research in r.researches.filtered(lambda s: s.minutes_left > 0):
                 research.write({'minutes_left': research.minutes_left - 1})
-                print('Updating researches')
-                research.do_research()
+                log = log + 'Updating researches'
+                log = log + research.do_research()
+        return log
 
 
     @api.multi
@@ -497,6 +517,7 @@ class character(models.Model):
     name = fields.Char()
     image = fields.Binary()
     fortress = fields.Many2one('game.fortress', ondelete='cascade')
+    player = fields.Many2one(related='fortress.player')
     science = fields.Float()
     construction = fields.Float()
     mining = fields.Float()
@@ -591,9 +612,10 @@ class research(models.Model):
 
     @api.multi
     def do_research(self):
+        log = 'do research'
         for r in self.filtered(lambda s: s.minutes_left == 1):
             if r.type == '1':
-                print('millora en armes')
+                log = log + 'millora en armes'
                 character_skills = sum(r.resource.characters.mapped('science'))
                 weapons_points = r.resource.fortress.player.weapons_points
                 ratio_skills_points = math.ceil(character_skills/(weapons_points+1))+1
@@ -601,7 +623,7 @@ class research(models.Model):
                 r.resource.fortress.player.write({'weapons_points': weapons_points + points_extra})
                 r.write({'result': str(points_extra)+' Points extra in Weapon Points \n Ratio Skills/Weapon points: '+str(ratio_skills_points)})
             if r.type == '2':
-                print('millora en química')
+                log = log + 'millora en química'
                 character_skills = sum(r.resource.characters.mapped('science'))
                 n_raws = len(r.resource.fortress.player.raws)
                 ratio_skills_n_raws = math.ceil(character_skills/(n_raws+1))+1
@@ -616,9 +638,9 @@ class research(models.Model):
                    new_raw = not_discovered[0]
                    self.env['game.raws'].create({'player': r.resource.fortress.player.id, 'raw': new_raw})
                    r.write({'result': 'Discovered new Raw material: '+str(self.env['game.raw'].search([('id','=',new_raw)]).name)})
-                   print('Discovered: '+ str(new_raw))
+                   log = log + 'Discovered: '+ str(new_raw)
             if r.type == '3':
-                print('millora en nutricio')
+                log = log + 'millora en nutricio'
                 character_skills = sum(r.resource.characters.mapped('science'))
                 food_points = r.resource.fortress.player.weapons_points
                 ratio_skills_points = math.ceil(character_skills/(food_points+1))+1
@@ -626,12 +648,14 @@ class research(models.Model):
                 r.resource.fortress.player.write({'food_points': food_points + points_extra})
                 r.write({'result': str(points_extra)+' Points extra in Food Points \n Ratio Skills/Food points: '+str(ratio_skills_points)})
             if r.type == '4':
-                print('millora en medicina')
+                log = log + 'millora en medicina'
             if r.type == '5':
-                print('millora en energia')
+                log = log + 'millora en energia'
+            log = log + r.result
+        return log
 
 
-### Els accessoris
+        ### Els accessoris
 
 ## Cal crear un wizard per a crear stuff.
 
@@ -692,3 +716,10 @@ class stuff_images(models.Model):
     type = fields.Selection([('0','Fire Weapons'),('1','Melee Weapons'),('2','Armor'),
                              ('3','Chemist'),('4','Nutrition'),('5','Medicine'),('6','Energy')])
     image = fields.Binary()
+
+class log(models.Model):
+    _name = 'game.log'
+    name = fields.Datetime(default=lambda self: fields.Datetime.now())
+    title = fields.Char()
+    description = fields.Text()
+

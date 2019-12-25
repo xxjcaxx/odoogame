@@ -104,7 +104,7 @@
       <field name="model">game.character</field>
       <field name="arch" type="xml">
         <tree>
-          <field name="name"/>
+          <field name="name"/><field name="player"/>
           <field name="fortress"/>
           <field name="science"/><field name="construction"/>
           <field name="mining"/><field name="war"/><field name="age"/>
@@ -121,15 +121,16 @@
           <sheet>
             <group>
               <group>
-              <field name="name"/>
-              <field name="image" widget="image"/>
-              <field name="fortress"/>
-             </group>
+                <field name="name"/>
+                <field name="image" widget="image"/>
+                <field name="fortress"/>
+                <field name="player"/>
+              </group>
               <group>
-              <field name="science"/><field name="construction"/>
-              <field name="mining"/><field name="war"/>
-              <field name="health"/><field name="age"/>
-                 </group>
+                <field name="science"/><field name="construction"/>
+                <field name="mining"/><field name="war"/>
+                <field name="health"/><field name="age"/>
+              </group>
             </group>
             <group>
               <field name="resources_available" attrs="{'invisible': [('resource', '!=', False)]}">
@@ -142,7 +143,7 @@
               </field>
               <field name="resource" attrs="{'readonly': [('fortress', '=', False)]}"  domain="[('fortress', '=', fortress)]"/>
               <field name="stuff"/>
-             </group>
+            </group>
           </sheet></form>
       </field>
     </record>
@@ -160,7 +161,7 @@
           <field name="mining"/><field name="war"/>
           <field name="health"/><field name="age"/>
           <field name="resource"/><field name="stuff"/>
-            <field name="unemployed"/>
+          <field name="unemployed"/>
           <templates>
             <t t-name="kanban-box">
               <div  t-attf-class="
@@ -202,8 +203,8 @@
       <field name="name">characters window</field>
       <field name="res_model">game.character</field>
       <field name="view_mode">kanban,tree,form</field>
-       <field name="domain"></field>
-       <field name="context">{'search_default_alive':1}</field>
+      <field name="domain"></field>
+      <field name="context">{'search_default_alive':1}</field>
     </record>
 
 
@@ -228,6 +229,35 @@
     </record>
 
 
+    <record model="ir.ui.view" id="game.log_list">
+      <field name="name">log tree</field>
+      <field name="model">game.log</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/> <field name="title"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.log_form">
+      <field name="name">log form</field>
+      <field name="model">game.log</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet><group>
+         <field name="name"/> <field name="title"/> <field name="description"/>
+          </group> </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.log_action_window">
+      <field name="name">log window</field>
+      <field name="res_model">game.log</field>
+      <field name="view_mode">tree,form</field>
+      <field name="auto_refresh">10</field>
+    </record>
+
 
 
     <menuitem name="Cost" id="game.menu_cost" parent="game.menu_1"
@@ -240,7 +270,8 @@
               action="game.character_action_window"/>
     <menuitem name="Researches" id="game.menu_research" parent="game.menu_1"
               action="game.research_action_window"/>
-
+    <menuitem name="Logs" id="game.menu_log" parent="game.menu_1"
+              action="game.log_action_window"/>
 
   </data>
 </odoo>

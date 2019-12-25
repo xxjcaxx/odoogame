@@ -13,6 +13,7 @@
                     <field name="food_points"/>
                     <field name="gold"/>
                     <field name="max_fortresses"/>
+                    <field name="clan"/>
                 </tree>
             </field>
         </record>
@@ -28,6 +29,8 @@
                             <group string="Personal Data">
                                 <field name="image" widget="image" style="width:100px;"/>
                                 <field name="name"/>
+                                <field name="clan"/>
+                                <field name="clan_image" widget="image"/>
                             </group>
                             <group string="Levels">
                                 <field name="weapons_points"/>
@@ -100,6 +103,12 @@
                                     </tree>
                                 </field>
                             </page>
+                            <page string="Wars">
+                                <separator string="Battles As Attack"></separator>
+                                <field name="battles_as_attack" />      <!-- Candidat a widget-->
+                                <separator string="Battles as Defense"></separator>
+                                <field name="battles_as_defense"/>
+                            </page>
                         </notebook>
                         <footer>
                             <button name="update_resources" type="object" string="Force update" class="oe_highlight"/>
@@ -112,10 +121,46 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="game.player_kanban">
+            <field name="name">resource kanban</field>
+            <field name="model">game.player</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="image_small"/>  <field name="id"/>
+                    <field name="name"/>
+
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div  t-attf-class="
+                            oe_kanban_card
+                            o_kanban_record_has_image_fill
+                            " >
+                                <div class="oe_game_kanban_div_image">
+                                    <img class="oe_kanban_image"
+                                         t-att-alt="record.name.value"
+                                         t-att-src="kanban_image('game.player', 'image_small', record.id.value)"/>
+
+                                </div>
+
+                                <div class="oe_kanban_details">
+                                    <a type="edit"> <h4><field name="name"/></h4>  </a>
+
+
+                                </div>
+
+
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+
         <record model="ir.actions.act_window" id="game.player_action_window">
             <field name="name">Player window</field>
             <field name="res_model">game.player</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,form,kanban</field>
         </record>
 
         <record model="ir.ui.view" id="game.fortress_list">
