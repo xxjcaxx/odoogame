@@ -3,7 +3,7 @@
 
         <record model="ir.ui.view" id="game.player_list">
             <field name="name">player list</field>
-            <field name="model">game.player</field>
+            <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
@@ -18,9 +18,122 @@
             </field>
         </record>
 
+
+        <record model="ir.ui.view" id="game.player_partner_form">
+            <field name="name">player form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="Player">
+                        <group>
+                            <group string="Personal Data">
+
+                                <field name="is_player"/>
+                                <field name="clan"/>
+                                <field name="clan_image" widget="image"/>
+                            </group>
+                            <group string="Levels">
+                                <field name="weapons_points"/>
+                                <field name="stuff_points"/>
+                                <field name="food_points"/>
+                                <field name="gold"/>
+                                <field name="max_fortresses"/>
+                            </group><!-- Candidat a widget-->
+                        </group>
+                        <notebook>
+                            <page string="Fortresses">
+
+
+                                <field name="fortressesk">
+                                    <kanban>
+                                        <!--list of field to be loaded -->
+                                        <field name="name"/>
+                                        <field name="id"/> <!-- És important afegir el id per al record.id.value -->
+                                        <field name="image_small"/>
+                                        <templates>
+                                            <t t-name="kanban-box">
+                                                <div t-attf-class="oe_kanban_card oe_kanban_global_click"
+                                                     style="-webkit-box-flex: 0; flex: none; width: 100px; min-width:100px; margin: 0px; border: none;">
+                                                    <a type="open">
+                                                        <img class="oe_kanban_image"
+                                                             t-att-src="kanban_image('game.fortress', 'image_small', record.id.value)"/>
+                                                    </a>
+                                                    <div class="oe_product_desc">
+                                                        <a type="open">
+                                                            <field name="name"></field>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                </field>
+
+                                <field name="fortresses">
+                                    <tree>
+                                        <field name="image_small" widget="image" style="width:16px"/>
+                                        <field name="name"/>
+                                        <field name="resources" widget="many2many_tags"/>
+                                        <field name="characters" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
+
+                                <button name="create_new_fortress" type="object" string="Create New Fortress"
+                                        class="oe_highlight"/>
+
+                            </page>
+                            <page string="Resources">
+                                <field name="resources" mode="kanban">
+
+                                </field>
+                            </page>
+                            <page string="Raws">
+                                <field name="raws"/>      <!-- Candidat a widget-->
+                            </page>
+                            <page string="Characters">
+                                <field name="characters" mode="kanban"/>      <!-- Candidat a widget-->
+                                <separator string="Unemployeds"></separator>
+                                <field name="unemployeds">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="fortress"/>
+                                        <field name="science"/><field name="construction"/>
+                                        <field name="mining"/><field name="war"/><field name="age"/>
+                                        <field name="health"/><field name="resource"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Wars">
+                                <separator string="Battles As Attack"></separator>
+                                <field name="battles_as_attack" />      <!-- Candidat a widget-->
+                                <separator string="Battles as Defense"></separator>
+                                <field name="battles_as_defense"/>
+                            </page>
+                            <page string="Stuff">
+                                <button name="assign_stuff" type="object" string="Assign unused stuff" class="oe_highlight"/>
+                                <separator string="Stuff"></separator>
+                                <field name="stuff" />
+
+                            </page>
+
+                        </notebook>
+                        <footer>
+                            <button name="update_resources" type="object" string="Force update" class="oe_highlight"/>
+
+
+                            <button name="reset_player" type="object" string="Reset" class="oe_highlight"/>
+                        </footer>
+
+                    </page>
+                </notebook>
+            </field>
+        </record>
+
+
         <record model="ir.ui.view" id="game.player_form">
             <field name="name">player form</field>
-            <field name="model">game.player</field>
+            <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <form>
 
@@ -109,9 +222,16 @@
                                 <separator string="Battles as Defense"></separator>
                                 <field name="battles_as_defense"/>
                             </page>
+                            <page string="Stuff">
+                                <button name="assign_stuff" type="object" string="Assign unused stuff" class="oe_highlight"/>
+                                <separator string="Stuff"></separator>
+                                <field name="stuff" />
+
+                            </page>
                         </notebook>
                         <footer>
                             <button name="update_resources" type="object" string="Force update" class="oe_highlight"/>
+
 
                             <button name="reset_player" type="object" string="Reset" class="oe_highlight"/>
                         </footer>
@@ -123,7 +243,7 @@
 
         <record model="ir.ui.view" id="game.player_kanban">
             <field name="name">resource kanban</field>
-            <field name="model">game.player</field>
+            <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <kanban>
                     <field name="image_small"/>  <field name="id"/>
@@ -159,7 +279,9 @@
 
         <record model="ir.actions.act_window" id="game.player_action_window">
             <field name="name">Player window</field>
-            <field name="res_model">game.player</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain"> [('is_player','=',True)]</field>
+            <field name="context">{'default_is_player': True}</field>
             <field name="view_mode">tree,form,kanban</field>
         </record>
 
@@ -447,7 +569,7 @@
             <field name="name">stuff list</field>
             <field name="model">game.stuff</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree decoration-danger="player==False" decoration-warning="character==False">
                     <field name="name"/>
                     <field name="hash"/>
                     <field name="character"/>
@@ -492,7 +614,7 @@
                             <field name="energy"/>
                             <field name="minutes_left"/>
                             <field name="duration"/>
-                            <button name="generate_name" type="object" string="Generate Name" class="oe_highlight"/>
+                            <button name="generate_name" type="object" string="Generate random data" class="oe_highlight"/>
 
                         </group>
                     </sheet>

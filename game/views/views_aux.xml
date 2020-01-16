@@ -132,18 +132,23 @@
                 <field name="health"/><field name="age"/>
               </group>
             </group>
-            <group>
-              <field name="resources_available" attrs="{'invisible': [('resource', '!=', False)]}">
-                <tree>
-                  <field name="image_small" widget="image"/>
-                  <field name="name"/>
-                  <button name="assign_to_resource" string="Assign" type="object"
-                          context="{'character':parent.id}"/>
-                </tree>
-              </field>
-              <field name="resource" attrs="{'readonly': [('fortress', '=', False)]}"  domain="[('fortress', '=', fortress)]"/>
-              <field name="stuff"/>
-            </group>
+            <notebook><page string="Resources">
+              <group>
+                <field name="resources_available" attrs="{'invisible': [('resource', '!=', False)]}">
+                  <tree>
+                    <field name="image_small" widget="image"/>
+                    <field name="name"/>
+                    <button name="assign_to_resource" string="Assign" type="object"
+                            context="{'character':parent.id}"/>
+                  </tree>
+                </field>
+                <field name="resource" attrs="{'readonly': [('fortress', '=', False)]}"  domain="[('fortress', '=', fortress)]"/>
+              </group>
+            </page><page string="Stuff">
+              <group>
+                <field name="stuff"/><field name="guns"/><field name="armors"/><field name="melees"/>
+              </group>
+            </page></notebook>
           </sheet></form>
       </field>
     </record>
@@ -207,6 +212,16 @@
       <field name="context">{'search_default_alive':1}</field>
     </record>
 
+    <record id="game.action_server_resurrect" model="ir.actions.server">
+    <field name="name">Resurect</field>
+    <field name="type">ir.actions.server</field>
+    <field name="model_id" ref="model_game_character" />
+    <field name="binding_model_id" ref="model_game_character" />
+    <field name="state">code</field>
+    <field name="code">model.action_resurrect()</field>
+</record>
+
+
 
     <record model="ir.ui.view" id="game.research_list">
       <field name="name">research tree</field>
@@ -245,7 +260,7 @@
       <field name="arch" type="xml">
         <form>
           <sheet><group>
-         <field name="name"/> <field name="title"/> <field name="description"/>
+            <field name="name"/> <field name="title"/> <field name="description"/>
           </group> </sheet>
         </form>
       </field>

@@ -8,10 +8,12 @@ from openerp.exceptions import ValidationError
 
 
 class player(models.Model):
-     _name = 'game.player'
-     name = fields.Char()
-     image = fields.Binary()
-     image_small = fields.Binary(compute='_get_images',store=True)
+     _name = 'res.partner'
+     _inherit ='res.partner'
+     #name = fields.Char()
+     #image = fields.Binary()
+     #image_small = fields.Binary(compute='_get_images',store=True)
+     is_player = fields.Boolean(default=False)
      fortresses = fields.One2many('game.fortress','player')
      fortressesk = fields.One2many(related='fortresses') # Per al kanban
      resources = fields.Many2many('game.resource', compute='_get_resources')
@@ -30,6 +32,8 @@ class player(models.Model):
      battles_as_attack = fields.Many2many('game.battle',relation='player_attacks', column1='p_a',column2='b_a')
      battles_as_defense = fields.Many2many('game.battle', relation='player_defends', column1='p_d',column2='b_d')
 
+     stuff = fields.One2many('game.stuff','player')
+
      @api.depends('image')
      def _get_images(self):
          for i in self:
@@ -45,6 +49,15 @@ class player(models.Model):
              player.unemployeds = player.fortresses.mapped('characters').filtered(lambda p: p.unemployed == True)
 
 
+
+     @api.model
+     def create(self, values):
+         new_id = super(player, self).create(values)
+         print(values)
+         new_id.reset_player()
+         return new_id
+
+
      @api.multi
      def reset_player(self):
          for p in self:
@@ -53,6 +66,10 @@ class player(models.Model):
              for i in p.fortresses:
                  for c in i.resources:
                      c.unlink()
+                 for c in i.characters:
+                     c.unlink()
+                 i.unlink()
+             for i in p.stuff:
                  i.unlink()
              f_template = self.env.ref('game.fortress1')
              names = ["Ardglass","Abingdon","Swindlincote","Rotherham","Far Water","Todmorden","Walden","Lanercoast","Aempleforth","Barkamsted","Swindmore","Mountmend","Dalmellington","Blencogo","Beggar's Hole","Faversham","Lindow","Dungannon","Doveport","Peterbrugh","Limesvilles","Grimsby","Thralkeld","Dawsbury","Rotherhithe","Pavv","Holmfirth","Dalmellington","Eastcliff","Bleakburn"]
@@ -117,6 +134,12 @@ class player(models.Model):
                  'raw': self.env.ref('game.food').id,
                  'quantity': 10
              })
+             for i in range(0,10):  # Crear caracters
+                 f.create_new_character()
+             for i in range(0,100):
+                 a = str(random.randint(0, 6))
+                 s = self.env['game.stuff'].create({'type': str(a), 'player': p.id})
+                 s.generate_name()
 
 
      def update_resources(self):
@@ -166,11 +189,21 @@ class player(models.Model):
                  'player': p.id
              })
 
+     @api.multi
+     def assign_stuff(self): # Assigna aleatoriament stuff als caracters
+         for p in self:
+             stuff = p.stuff.filtered(lambda s: len(s.character)==0)
+             print(stuff)
+             characters = p.characters.ids
+             for s in stuff:
+                 s.write({'character':random.choice(characters)})
+
+
 
 class fortress(models.Model):
     _name = 'game.fortress'
     name = fields.Char()
-    player = fields.Many2one('game.player', ondelete='cascade')
+    player = fields.Many2one('res.partner', ondelete='cascade')
     image = fields.Binary()
     image_small = fields.Binary(string='Image',compute='_get_images', store=True)
     template = fields.Boolean()
@@ -468,7 +501,7 @@ class raw(models.Model):
 class raws(models.Model):
     _name = 'game.raws'
     name = fields.Char(related='raw.name')
-    player = fields.Many2one('game.player', ondelete='cascade')
+    player = fields.Many2one('res.partner', ondelete='cascade')
     raw = fields.Many2one('game.raw')
     quantity = fields.Float(digits = (12,5))
     production = fields.Float(compute='get_production')
@@ -583,7 +616,49 @@ class character(models.Model):
         c_template = self.env.ref('game.character_template' + str(random.randint(1, 3)))
         self.image = c_template.image
 
+    guns = fields.Many2many('game.stuff', compute='_get_stuff_type')
+    armors =  fields.Many2many('game.stuff', compute='_get_stuff_type')
+    melees = fields.Many2many('game.stuff', compute='_get_stuff_type')
 
+    gun_power = fields.Integer(compute='_get_stuff_type')
+    melee_power = fields.Integer(compute='_get_stuff_type')
+    armor_power = fields.Integer(compute='_get_stuff_type')
+
+
+    @api.multi
+    def _get_stuff_type(self):
+        for c in self:
+            c.guns = c.stuff.filtered(lambda s: s.type=='0')
+            c.armors = c.stuff.filtered(lambda s: s.type == '2')
+            c.melees = c.stuff.filtered(lambda s: s.type == '1')
+
+            best = c_at.stuff.filtered(lambda s: s.type == '0') # Si va equipat en armes de foc
+            if best:
+                best = best.sorted(key=lambda s: s.shoot, reverse=True)[0].shoot # La millor arma de foc
+            else:
+                best = 0
+            c.gun_power = best
+
+            best = c_at.stuff.filtered(lambda s: s.type == '1') # Si va equipat en armes de melee
+            if best:
+                best = best.sorted(key=lambda s: s.shoot, reverse=True)[0].shoot # La millor arma de melee
+            else:
+                best = 0
+            c.melee_power = best
+
+            best = c_at.stuff.filtered(lambda s: s.type == '2') # Si va equipat en armadura
+            if best:
+                best = best.sorted(key=lambda s: s.shoot, reverse=True)[0].shoot # La millor arma de foc
+            else:
+                best = 0
+            c.armor_power = best
+
+
+    def action_resurrect(self):
+        print('RESUREECCCCCTTTT')
+        for c in self.browse(self.env.context.get('active_ids')):
+            print(c.health)
+            c.write({'health':100})
 
 class character_template(models.Model):
     _name = 'game.character.template'
@@ -665,9 +740,9 @@ class stuff(models.Model):
     hash = fields.Char(readonly=True)
     image = fields.Binary(readonly=True)
     character = fields.Many2one('game.character')
-    player = fields.Many2one('game.player')
+    player = fields.Many2one('res.partner')
     type = fields.Selection([('0','Fire Weapons'),('1','Melee Weapons'),('2','Armor'),
-                             ('3','Chemist'),('4','Nutrition'),('5','Medicine'),('6','Energy')])
+                             ('3','Chemist'),('4','Nutrition'),('5','Medicine'),('6','Energy')], required=True)
     # Propietats:
     melee = fields.Integer()
     shoot = fields.Integer()
@@ -705,6 +780,33 @@ class stuff(models.Model):
          adjective = adjectives[0]
          image = self.env.ref('game.stuff_template'+str(s.type)).image
          s.write({'name': adjective+" "+word,'image':image})
+         s.generate_properties()
+
+
+    @api.multi
+    def generate_properties(self):
+        for s in self:
+            points = 0
+            if s.player:
+                if s.type == '0' or s.type == '1':
+                    points = s.player.weapons_points
+                else:
+                    points = s.player.stuff_points
+            points = points + 100
+            base_points = {'0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0}
+            p = round(points * random.betavariate(4,1)+1) # Betavariate en aquests parametres dona normalment numeros grans
+            base_points[s.type] = p
+            points = points - p
+            while points > 0:
+                p = round(points * random.random()+1)
+                a = str(random.randint(0,6))
+                base_points[a] = base_points[a]+p
+                points = points - p
+                print(points)
+            s.write({'melee':base_points['1'], 'shoot':base_points['0'],'armor': base_points['2'],
+                     'science': base_points['3'],'cook': base_points['4'],'medicine': base_points['5'],'energy': base_points['6']})
+
+
 
     @api.onchange('character')
     def _onchange_character(self):

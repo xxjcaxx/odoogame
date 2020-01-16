@@ -70,21 +70,39 @@
             </group>
             <notebook><page string="Attack">
               <group>
-                <field name="attack" mode="kanban"/>
+                <field name="attack" />
                 <field name="characters_attack" attrs="{'invisible': [('attack', '=', [])],
                            'readonly': [('attack','=',[])]}" >
+
                   <tree>
                     <field name="name"/><field name="player"/>
                     <field name="fortress"/><field name="war"/><field name="age"/>
                     <field name="health"/><field name="resource"/>
                   </tree>
                 </field>
+                                          <field name="characters_attack_available" attrs="{'invisible': [('attack', '=', [])],
+                           'readonly': [('attack','=',[])]}" >
+                                                  <tree>
+                    <field name="name"/><field name="player"/>
+                    <field name="fortress"/><field name="war"/><field name="age"/>
+                    <field name="health"/><field name="resource"/>
+                  </tree>
+
+                                          </field>
               </group>
             </page>
               <page string="Defend">
                 <group>
-                  <field name="defend" mode="kanban"/>
+                  <field name="defend" />
                   <field name="characters_defend" attrs="{'invisible': [('defend', '=', [])],
+                           'readonly': [('defend','=',[])]}" >
+                    <tree>
+                      <field name="name"/><field name="player"/>
+                      <field name="fortress"/><field name="war"/><field name="age"/>
+                      <field name="health"/><field name="resource"/>
+                    </tree>
+                  </field>
+                                    <field name="characters_defend_available" attrs="{'invisible': [('defend', '=', [])],
                            'readonly': [('defend','=',[])]}" >
                     <tree>
                       <field name="name"/><field name="player"/>

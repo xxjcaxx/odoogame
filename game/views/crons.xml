@@ -4,7 +4,7 @@
 
         <record model="ir.cron" forcecreate="True" id="game.cron_update">
             <field name="name">Game: Cron Update</field>
-            <field name="model_id" ref="model_game_player"/>
+            <field name="model_id" ref="model_res_partner"/>
             <field name="state">code</field>
             <field name="code">model.update_resources()</field>
             <field name="user_id" ref="base.user_root"/>
