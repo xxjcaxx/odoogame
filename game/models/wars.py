@@ -45,8 +45,8 @@ class clan(models.Model):
 class battle(models.Model):
     _name = 'game.battle'
     name = fields.Char()
-    attack = fields.Many2many('res.partner', relation='player_attacks', column1='b_a',column2='p_a') # Cal especificar el nom de la taula
-    defend = fields.Many2many('res.partner', relation='player_defends', column1='b_d',column2='p_d')
+    attack = fields.Many2many('res.partner', relation='player_attacks', column1='b_a',column2='p_a', domain="[('is_player','!=',True)]") # Cal especificar el nom de la taula
+    defend = fields.Many2many('res.partner', relation='player_defends', column1='b_d',column2='p_d', domain="[('is_player','!=',True)]")
     characters_attack_available = fields.Many2many('game.character', compute='_get_characters_available')
     characters_defend_available = fields.Many2many('game.character', compute='_get_characters_available')
     characters_attack = fields.Many2many('game.character',relation='characters_attack', domain="[('id', 'in', characters_attack_available)]")
@@ -119,7 +119,7 @@ class battle(models.Model):
             result = {
                 'domain': {'characters_attack': [('id', 'in', characters_available.ids)],
                            'characters_defend': [('id', 'in', characters_available_defense.ids)],
-                           'attack': [('id','not in', b.defend.ids)], 'defend': [('id','not in', b.attack.ids)],
+                           'attack': [('id','not in', b.defend.ids),('is_player','=',True)], 'defend': [('id','not in', b.attack.ids),('is_player','=',True)],
                            #'attack': [('clan', 'in', b.attack.mapped('clan'))], 'defend': [('clan', 'in', b.defend.mapped('clan'))],
                            },
             }
@@ -151,6 +151,7 @@ class battle(models.Model):
             print(de)
             finished = False
             first = True  # La primera ronda es amb dispars, la resta es melee
+            rounds = 1
             while(not finished):
                 # L'ordre de la batalla és important,
                 # ja que els primers són els primers en atacar defendre
@@ -164,6 +165,42 @@ class battle(models.Model):
                 first = False
                 if len(at) == 0 or len(de) == 0:
                     finished = True
+                else:
+                    rounds = rounds + 1
+
+            # Ja ha acabat, ara a repartir experiencia i botin de guerra
+            if len(at) == 0:
+                wins = 'Defenders ('+str(len(de))+' survivors)'
+                for d in self.env['game.character'].browse(de):
+                    d.write({'war':d.war+100})
+                botin = b.characters_attack.mapped('stuff')
+                players = b.defend.ids
+                for s in botin:
+                    player = random.choice(players)
+                    s.write({'character':False,'player':player})
+            else:
+                wins = 'Attackers ('+str(len(at))+' survivors)'
+                for a in self.env['game.character'].browse(at):
+                    a.write({'war':a.war+100}) # Augmenta la experiència en guerra de l'atacant
+                botin = b.characters_defend.mapped('stuff') # Totes les armes passen al botin de guerra
+                players = b.attack.ids
+                for s in botin:
+                    player = random.choice(players)
+                    s.write({'character':False,'player':player})
+                # L'atacant ataca per obtindre recursos del defensor
+                first_defender = b.defend[0]
+                for raw in first_defender.raws:
+                    print(raw.name)
+
+            # Anem a fer que alguns dels caiguts siguen ferits i no morts
+            death = (b.characters_attack + b.characters_defend).filtered(lambda c: c.health == 0)
+            for d in death:
+                if random.random() > 0.5: # 50% de que no estiga mort
+                    d.write({'health':1})
+
+
+            self.env['game.log'].create({'title': 'Battle '+str(b.name), 'description': wins+' wins in '+str(rounds)+' rounds'})
+            b.write({'finished':True})
 
     def calculate_attack(self,c_at,c_de,first):
         print('Ataca: '+c_at.name+' Defen: '+c_de.name)
@@ -178,7 +215,7 @@ class battle(models.Model):
             if at_best_shot:
                 at_best_shot = at_best_shot.sorted(key=lambda s: s.shoot, reverse=True)[0].shoot # La millor arma de foc
             else:
-                at_best_shot = 0
+                at_best_shot = 1
 
         else:
             # Calcular en base al melee
@@ -186,7 +223,7 @@ class battle(models.Model):
             if at_best_shot:
                 at_best_shot = at_best_shot.sorted(key=lambda s: s.melee, reverse=True)[0].melee # La millor arma de foc
             else:
-                at_best_shot = 0
+                at_best_shot = 1
 
 
         de_best_armor = c_de.stuff.filtered(lambda  s: s.type == '2') # Si te armadura

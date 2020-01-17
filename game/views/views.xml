@@ -285,6 +285,27 @@
             <field name="view_mode">tree,form,kanban</field>
         </record>
 
+
+        <record model="ir.actions.act_window.view" id="game.player_action_tree">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="game.player_list"/>
+            <field name="act_window_id" ref="game.player_action_window"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="game.player_action_form">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="game.player_form"/>
+            <field name="act_window_id" ref="game.player_action_window"/>
+        </record>
+        <record model="ir.actions.act_window.view" id="game.player_action_kanban">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="game.player_kanban"/>
+            <field name="act_window_id" ref="game.player_action_window"/>
+        </record>
+
         <record model="ir.ui.view" id="game.fortress_list">
             <field name="name">fortress list</field>
             <field name="model">game.fortress</field>

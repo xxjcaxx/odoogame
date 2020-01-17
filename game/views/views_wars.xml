@@ -44,13 +44,13 @@
       <field name="name">battle list</field>
       <field name="model">game.battle</field>
       <field name="arch" type="xml">
-        <tree>
+        <tree decoration-muted="state=='4'">
           <field name="name"/>
           <field name="attack" widget="many2many_tags"/> <field name="defend" widget="many2many_tags"/>
           <field name="characters_attack" widget="many2many_tags"/>
           <field name="characters_defend" widget="many2many_tags"/>
           <field name="date"/>
-          <field name="finished"/>
+          <field name="state"/>
 
         </tree>
       </field>
@@ -70,44 +70,44 @@
             </group>
             <notebook><page string="Attack">
               <group>
-                <field name="attack" />
+                <field name="attack"/>
                 <field name="characters_attack" attrs="{'invisible': [('attack', '=', [])],
                            'readonly': [('attack','=',[])]}" >
 
                   <tree>
-                    <field name="name"/><field name="player"/>
-                    <field name="fortress"/><field name="war"/><field name="age"/>
-                    <field name="health"/><field name="resource"/>
+                                      <field name="name"/><field name="player"/>
+                    <field name="war"/><field name="age"/>
+                    <field name="health"/><field name="gun_power"/><field name="melee_power"/><field name="armor_power"/>
                   </tree>
                 </field>
-                                          <field name="characters_attack_available" attrs="{'invisible': [('attack', '=', [])],
+                <field name="characters_attack_available" attrs="{'invisible': [('attack', '=', [])],
                            'readonly': [('attack','=',[])]}" >
-                                                  <tree>
+                  <tree>
                     <field name="name"/><field name="player"/>
-                    <field name="fortress"/><field name="war"/><field name="age"/>
-                    <field name="health"/><field name="resource"/>
+                    <field name="war"/><field name="age"/>
+                    <field name="health"/><field name="gun_power"/><field name="melee_power"/><field name="armor_power"/>
                   </tree>
 
-                                          </field>
+                </field>
               </group>
             </page>
               <page string="Defend">
                 <group>
-                  <field name="defend" />
+                  <field name="defend"/>
                   <field name="characters_defend" attrs="{'invisible': [('defend', '=', [])],
                            'readonly': [('defend','=',[])]}" >
                     <tree>
-                      <field name="name"/><field name="player"/>
-                      <field name="fortress"/><field name="war"/><field name="age"/>
-                      <field name="health"/><field name="resource"/>
+                    <field name="name"/><field name="player"/>
+                    <field name="war"/><field name="age"/>
+                    <field name="health"/><field name="gun_power"/><field name="melee_power"/><field name="armor_power"/>
                     </tree>
                   </field>
-                                    <field name="characters_defend_available" attrs="{'invisible': [('defend', '=', [])],
+                  <field name="characters_defend_available" attrs="{'invisible': [('defend', '=', [])],
                            'readonly': [('defend','=',[])]}" >
                     <tree>
-                      <field name="name"/><field name="player"/>
-                      <field name="fortress"/><field name="war"/><field name="age"/>
-                      <field name="health"/><field name="resource"/>
+                                        <field name="name"/><field name="player"/>
+                    <field name="war"/><field name="age"/>
+                    <field name="health"/><field name="gun_power"/><field name="melee_power"/><field name="armor_power"/>
                     </tree>
                   </field>
                 </group>

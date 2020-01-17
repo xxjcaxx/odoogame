@@ -1,8 +1,5 @@
 <odoo>
   <data>
-
-
-
     <record model="ir.ui.view" id="game.cost_list">
       <field name="name">cost list</field>
       <field name="model">game.cost</field>
@@ -130,6 +127,7 @@
                 <field name="science"/><field name="construction"/>
                 <field name="mining"/><field name="war"/>
                 <field name="health"/><field name="age"/>
+                <field name="gun_power"/><field name="melee_power"/><field name="armor_power"/>
               </group>
             </group>
             <notebook><page string="Resources">
@@ -146,7 +144,50 @@
               </group>
             </page><page string="Stuff">
               <group>
-                <field name="stuff"/><field name="guns"/><field name="armors"/><field name="melees"/>
+                <field name="stuff">
+                  <tree>
+                    <field name="name"/>
+
+                    <field name="type"/>
+                    <field name="melee"/>
+                    <field name="shoot"/>
+                    <field name="armor"/>
+                    <field name="science"/>
+                    <field name="cook"/>
+                    <field name="medicine"/>
+                    <field name="energy"/>
+                     <button name="take_away" string="Take Allay" type="object"
+                                            context="{'character':parent.id}"/>
+                  </tree>
+                </field>
+                <field name="guns">
+                  <tree>
+                    <field name="name"/>
+
+                    <field name="shoot"/>
+ <button name="take_away" string="Take Allay" type="object"
+                                            context="{'character':parent.id}"/>
+                  </tree>
+                </field>
+                <field name="armors">
+                  <tree>
+                    <field name="name"/>
+
+
+                    <field name="armor"/>
+ <button name="take_away" string="Take Away" type="object"
+                                            context="{'character':parent.id}"/>
+                  </tree>
+                </field>
+                <field name="melees">
+                  <tree>
+                    <field name="name"/>
+
+                    <field name="melee"/>
+ <button name="take_away" string="Take Allay" type="object"
+                                            context="{'character':parent.id}"/>
+                  </tree>
+                </field>
               </group>
             </page></notebook>
           </sheet></form>
@@ -213,13 +254,13 @@
     </record>
 
     <record id="game.action_server_resurrect" model="ir.actions.server">
-    <field name="name">Resurect</field>
-    <field name="type">ir.actions.server</field>
-    <field name="model_id" ref="model_game_character" />
-    <field name="binding_model_id" ref="model_game_character" />
-    <field name="state">code</field>
-    <field name="code">model.action_resurrect()</field>
-</record>
+      <field name="name">Resurect</field>
+      <field name="type">ir.actions.server</field>
+      <field name="model_id" ref="model_game_character" />
+      <field name="binding_model_id" ref="model_game_character" />
+      <field name="state">code</field>
+      <field name="code">model.action_resurrect()</field>
+    </record>
 
 
 

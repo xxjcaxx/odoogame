@@ -45,8 +45,8 @@ class player(models.Model):
      def _get_resources(self):
          for player in self:
              player.resources = player.fortresses.mapped('resources')
-             player.characters = player.fortresses.mapped('characters')
-             player.unemployeds = player.fortresses.mapped('characters').filtered(lambda p: p.unemployed == True)
+             player.characters = player.fortresses.mapped('characters').filtered(lambda p: p.health > 0)
+             player.unemployeds = player.fortresses.mapped('characters').filtered(lambda p: p.unemployed == True and p.health > 0)
 
 
 
@@ -144,7 +144,7 @@ class player(models.Model):
 
      def update_resources(self):
          print('Updating resources')
-         log = 'Updating resources'
+         log = ' Updating resources '
          resources = self.env['game.resource'].search([('template', '=', False)]) # Busca els recursos que no son template
          for r in resources.filtered(lambda r: r.inactive == False ):
              if r.minutes_left > 0:
@@ -156,7 +156,7 @@ class player(models.Model):
                  log = log + " " + r.research()
 
          print('Updating characters')
-         log = log + ' Updating characters'
+         log = log + ' Updating characters '
          characters = self.env['game.character'].search([('health','>',0)])
          characters.grow()
 
@@ -164,12 +164,19 @@ class player(models.Model):
          log = log + fortresses.grow_population()
 
          print('Updating stuff')
-         log = log + 'Updating stuff'
+         log = log + ' Updating stuff '
          stuff = self.env['game.stuff'].search([('minutes_left','>',0)])
          for s in stuff:
              s.write({'minutes_left': s.minutes_left - 1})
 
+         print('Calculate wars')
+         log = log + ' calculate wars '
+         wars = self.env['game.battle'].search([('finished','=',False)]).filtered(lambda b: b.date <= fields.Datetime.now())
+         for w in wars:
+             w.compute_battle()
+
          self.env['game.log'].create({'title': 'Update' ,'description' : log})
+
 
      @api.multi
      def create_new_fortress(self):
@@ -235,6 +242,7 @@ class fortress(models.Model):
                 'health': random.randint(1,20)
             })
 
+
     @api.multi
     def _get_available_resources(self):
         for f in self:
@@ -264,7 +272,9 @@ class fortress(models.Model):
                         'health': random.randint(1, 20)
                     })
                     log = log + 'Growing population ' + probability + " " + str(c)
+        print(log)
         return log
+
 
 class resource(models.Model):
     _name = 'game.resource'
@@ -632,23 +642,23 @@ class character(models.Model):
             c.armors = c.stuff.filtered(lambda s: s.type == '2')
             c.melees = c.stuff.filtered(lambda s: s.type == '1')
 
-            best = c_at.stuff.filtered(lambda s: s.type == '0') # Si va equipat en armes de foc
+            best = c.stuff.filtered(lambda s: s.type == '0') # Si va equipat en armes de foc
             if best:
                 best = best.sorted(key=lambda s: s.shoot, reverse=True)[0].shoot # La millor arma de foc
             else:
                 best = 0
             c.gun_power = best
 
-            best = c_at.stuff.filtered(lambda s: s.type == '1') # Si va equipat en armes de melee
+            best = c.stuff.filtered(lambda s: s.type == '1') # Si va equipat en armes de melee
             if best:
-                best = best.sorted(key=lambda s: s.shoot, reverse=True)[0].shoot # La millor arma de melee
+                best = best.sorted(key=lambda s: s.melee, reverse=True)[0].melee # La millor arma de melee
             else:
                 best = 0
             c.melee_power = best
 
-            best = c_at.stuff.filtered(lambda s: s.type == '2') # Si va equipat en armadura
+            best = c.stuff.filtered(lambda s: s.type == '2') # Si va equipat en armadura
             if best:
-                best = best.sorted(key=lambda s: s.shoot, reverse=True)[0].shoot # La millor arma de foc
+                best = best.sorted(key=lambda s: s.armor, reverse=True)[0].armor # La millor arma de foc
             else:
                 best = 0
             c.armor_power = best
@@ -811,6 +821,11 @@ class stuff(models.Model):
     @api.onchange('character')
     def _onchange_character(self):
         self.player = self.character.fortress.player.id
+
+    @api.multi
+    def take_away(self):
+        for s in self:
+            s.write({'character':False})
 
 
 class stuff_images(models.Model):
