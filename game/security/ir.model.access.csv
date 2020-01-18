@@ -17,3 +17,4 @@ access_game_market,game.market,model_game_market,,1,1,1,1
 access_game_clan,game.clan,model_game_clan,,1,1,1,1
 access_game_battle,game.battle,model_game_battle,,1,1,1,1
 access_game_log,game.log,model_game_log,,1,1,1,
+access_game_ad,game.ad,model_game_ad,,1,1,1,

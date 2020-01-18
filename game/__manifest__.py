@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mail'],
+    'depends': ['base','mail','product','purchase','sale'],
 
     # always loaded
     'data': [
@@ -28,7 +28,7 @@
         'views/wizards.xml',
         'views/views.xml',
          'views/views_aux.xml', 'views/views_wars.xml',
-        'views/templates.xml', 'views/search.xml',
+        'views/templates.xml', 'views/search.xml', 'views/ads.xml',
 'views/crons.xml',
         'demo/data.xml',
         'demo/raw.xml',

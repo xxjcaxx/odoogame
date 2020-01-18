@@ -207,6 +207,9 @@ class player(models.Model):
 
 
 
+
+
+
 class fortress(models.Model):
     _name = 'game.fortress'
     name = fields.Char()

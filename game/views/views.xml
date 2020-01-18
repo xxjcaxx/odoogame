@@ -138,6 +138,8 @@
                 <form>
 
                     <sheet>
+
+
                         <group>
                             <group string="Personal Data">
                                 <field name="image" widget="image" style="width:100px;"/>
