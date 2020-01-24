@@ -8,6 +8,7 @@
                 <tree>
                     <field name="name"/>
                     <field name="fortresses" widget="many2many_tags"/>
+                    <field name="points"/>
                     <field name="weapons_points"/>
                     <field name="stuff_points"/>
                     <field name="food_points"/>
@@ -116,6 +117,18 @@
                                 <field name="stuff" />
 
                             </page>
+                            <page string="Points">
+
+                                <field name="points" />
+                                <field name="points_history">
+                                    <tree>
+                                        <field name="player"/>
+                                        <field name="date"/>
+                                        <field name="points"/>
+                                    </tree>
+                                </field>
+
+                            </page>
 
                         </notebook>
                         <footer>
@@ -129,6 +142,16 @@
                 </notebook>
             </field>
         </record>
+
+
+        <act_window id="game.launch_points_graph"
+                    name="Launch points graph"
+                    src_model="res.partner"
+                    res_model="game.points"
+                    view_mode="graph"
+                    target="new"
+                    domain="[('player','=',active_id)]"
+        />
 
 
         <record model="ir.ui.view" id="game.player_form">
@@ -219,6 +242,8 @@
                                 </field>
                             </page>
                             <page string="Wars">
+                                 <button name="%(game.launch_create_battle_wizard)d" type="action" string="Create Battle"
+                                            class="oe_highlight" ></button>
                                 <separator string="Battles As Attack"></separator>
                                 <field name="battles_as_attack" />      <!-- Candidat a widget-->
                                 <separator string="Battles as Defense"></separator>
@@ -229,6 +254,21 @@
                                 <separator string="Stuff"></separator>
                                 <field name="stuff" />
 
+                            </page>
+                                    <page string="Points">
+<separator string="Points"></separator>
+                                <field name="points" />
+                                        <separator string="Points History"></separator>
+                                     <field name="points_history">
+                                    <tree>
+                                        <field name="player"/>
+                                        <field name="date"/>
+                                        <field name="points"/>
+                                    </tree>
+
+                                </field>
+ <button name="%(game.launch_points_graph)d" type="action" string="Show Graph"
+                                            class="oe_highlight" ></button>
                             </page>
                         </notebook>
                         <footer>

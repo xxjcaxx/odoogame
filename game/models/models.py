@@ -17,10 +17,12 @@ class player(models.Model):
      fortresses = fields.One2many('game.fortress','player')
      fortressesk = fields.One2many(related='fortresses') # Per al kanban
      resources = fields.Many2many('game.resource', compute='_get_resources')
-     raws = fields.One2many('game.raws','player')
+     raws = fields.One2many('game.raws','player', domain= lambda s: [('quantity','>',0)])
      characters = fields.Many2many('game.character', compute='_get_resources')
      unemployeds = fields.Many2many('game.character', compute='_get_resources')
 
+     points = fields.Integer()
+     points_history = fields.One2many('game.points','player')
      weapons_points = fields.Integer()  #Els punts a repartir en cada arma
      stuff_points = fields.Integer()    #Els punts a repartir en cada stuff
      food_points = fields.Integer()     #El nivell de tecnologia de menjar
@@ -47,8 +49,6 @@ class player(models.Model):
              player.resources = player.fortresses.mapped('resources')
              player.characters = player.fortresses.mapped('characters').filtered(lambda p: p.health > 0)
              player.unemployeds = player.fortresses.mapped('characters').filtered(lambda p: p.unemployed == True and p.health > 0)
-
-
 
      @api.model
      def create(self, values):
@@ -116,30 +116,17 @@ class player(models.Model):
              })
              for i in p.raws:
                  i.unlink()
-             r = self.env['game.raws'].create({
-                 'name': 'Stones',
-                 'player': p.id,
-                 'raw': self.env.ref('game.piedra').id,
-                 'quantity': 100
-             })
-             r = self.env['game.raws'].create({
-                 'name': 'Iron',
-                 'player': p.id,
-                 'raw': self.env.ref('game.hierro').id,
-                 'quantity': 10
-             })
-             r = self.env['game.raws'].create({
-                 'name': 'Food',
-                 'player': p.id,
-                 'raw': self.env.ref('game.food').id,
-                 'quantity': 10
-             })
+             for i in self.env['game.raw'].search([]): # Assignar tots els Raws amb 0
+                 r = self.env['game.raws'].create({'name': i.name, 'player': p.id, 'raw': i.id, 'quantity': 0})
+
              for i in range(0,10):  # Crear caracters
                  f.create_new_character()
-             for i in range(0,100):
+             for i in range(0,100): # Crear Stuff
                  a = str(random.randint(0, 6))
                  s = self.env['game.stuff'].create({'type': str(a), 'player': p.id})
                  s.generate_name()
+             p.assign_stuff()
+
 
 
      def update_resources(self):
@@ -175,6 +162,8 @@ class player(models.Model):
          for w in wars:
              w.compute_battle()
 
+         self.search([]).calculate_points()
+
          self.env['game.log'].create({'title': 'Update' ,'description' : log})
 
 
@@ -205,10 +194,15 @@ class player(models.Model):
              for s in stuff:
                  s.write({'character':random.choice(characters)})
 
-
-
-
-
+     @api.multi
+     def calculate_points(self):
+         for p in self:
+             points = len(p.characters.filtered(lambda c: c.health > 0))
+             points = points + len(p.stuff)
+             points = points + sum(p.resources.mapped('level'))
+             if p.points != points:
+                 p.write({'points':points})
+                 self.env['game.points'].create({'player': p.id, 'points': points})
 
 class fortress(models.Model):
     _name = 'game.fortress'
@@ -291,6 +285,7 @@ class resource(models.Model):
     image = fields.Binary()
     image_small = fields.Binary(compute='_get_images', store=True)
     fortress = fields.Many2one('game.fortress', ondelete='cascade')
+
     level = fields.Integer()
     template = fields.Boolean()
     parent = fields.Many2one('game.resource', domain="[('template', '=', True)]")
@@ -380,9 +375,6 @@ class resource(models.Model):
             c_productions = r.characters_productions
             for p in productions:  # La llista de les produccions d'aquest recurs
                 raws = r.fortress.player.raws.filtered(lambda r: r.raw.id == p.id)  # El raws del player que es d'aquesta produccio
-                if len(raws) == 0:
-                     raws = self.env['game.raws'].create(
-                        {'name': p.name, 'player': r.fortress.player.id, 'raw': p.id, 'quantity': 0})
                 for i in raws:
                     q = (1440 * r.level) / p.production_cost # Costa més quan millor és el material
                     log = log +" "+ str(p.name) + " Res Production:   " + str(q)
@@ -515,6 +507,7 @@ class raws(models.Model):
     _name = 'game.raws'
     name = fields.Char(related='raw.name')
     player = fields.Many2one('res.partner', ondelete='cascade')
+    clan = fields.Many2one('game.clan', ondelete='cascade')
     raw = fields.Many2one('game.raw')
     quantity = fields.Float(digits = (12,5))
     production = fields.Float(compute='get_production')
@@ -539,6 +532,14 @@ class raws(models.Model):
             raws.production = production
             raws.character_production = c_production
             raws.total_production = production + c_production
+
+    @api.constrains('player','clan')
+    def _check_owner(self):
+        for r in self:
+            if len(r.player) > 0  and len(r.clan) > 0:
+                raise ValidationError("A raw cannot of a player and a clan at the same time")
+
+
 
 
 class raws_resource(models.Model):
@@ -843,3 +844,8 @@ class log(models.Model):
     title = fields.Char()
     description = fields.Text()
 
+class points(models.Model):
+    _name = 'game.points'
+    player = fields.Many2one('res.partner')
+    date = fields.Char(default=lambda self: fields.Datetime.now())
+    points = fields.Integer()

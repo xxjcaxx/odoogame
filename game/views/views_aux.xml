@@ -42,7 +42,7 @@
       <field name="arch" type="xml">
         <tree decoration-danger="quantity&lt;5" decoration-warning="total_production&lt;=0">
           <field name="name"/>
-          <field name="player"/>
+          <field name="player"/><field name="clan"/>
           <field name="raw"/>
           <field name="quantity"/>
           <field name="production"/><field name="character_production"/>
@@ -60,7 +60,7 @@
           <sheet>
             <group>
               <field name="name"/>
-              <field name="player"/>
+              <field name="player"/><field name="clan"/>
               <field name="raw"/>
               <field name="quantity"/>
               <field name="production"/><field name="character_production"/>
@@ -156,8 +156,8 @@
                     <field name="cook"/>
                     <field name="medicine"/>
                     <field name="energy"/>
-                     <button name="take_away" string="Take Allay" type="object"
-                                            context="{'character':parent.id}"/>
+                    <button name="take_away" string="Take Allay" type="object"
+                            context="{'character':parent.id}"/>
                   </tree>
                 </field>
                 <field name="guns">
@@ -165,8 +165,8 @@
                     <field name="name"/>
 
                     <field name="shoot"/>
- <button name="take_away" string="Take Allay" type="object"
-                                            context="{'character':parent.id}"/>
+                    <button name="take_away" string="Take Allay" type="object"
+                            context="{'character':parent.id}"/>
                   </tree>
                 </field>
                 <field name="armors">
@@ -175,8 +175,8 @@
 
 
                     <field name="armor"/>
- <button name="take_away" string="Take Away" type="object"
-                                            context="{'character':parent.id}"/>
+                    <button name="take_away" string="Take Away" type="object"
+                            context="{'character':parent.id}"/>
                   </tree>
                 </field>
                 <field name="melees">
@@ -184,8 +184,8 @@
                     <field name="name"/>
 
                     <field name="melee"/>
- <button name="take_away" string="Take Allay" type="object"
-                                            context="{'character':parent.id}"/>
+                    <button name="take_away" string="Take Allay" type="object"
+                            context="{'character':parent.id}"/>
                   </tree>
                 </field>
               </group>
@@ -311,8 +311,40 @@
       <field name="name">log window</field>
       <field name="res_model">game.log</field>
       <field name="view_mode">tree,form</field>
-      <field name="auto_refresh">10</field>
     </record>
+
+    <record model="ir.ui.view" id="game.points_graph">
+      <field name="name">points graph</field>
+      <field name="model">game.points</field>
+      <field name="arch" type="xml">
+        <graph string="Points History" type="line">
+          <field name="date"  type="row"/>
+           <field name="player"  type="col"/>
+          <field name="points" type="measure"/>
+        </graph>
+
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="game.points_tree">
+      <field name="name">points tree</field>
+      <field name="model">game.points</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="player"/>
+          <field name="date"/>
+          <field name="points"/>
+        </tree>
+
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.points_action_window">
+      <field name="name">points graph</field>
+      <field name="res_model">game.points</field>
+      <field name="view_mode">tree,graph,form</field>
+    </record>
+
 
 
 
@@ -328,6 +360,9 @@
               action="game.research_action_window"/>
     <menuitem name="Logs" id="game.menu_log" parent="game.menu_1"
               action="game.log_action_window"/>
+
+    <menuitem name="Points" id="game.menu_points" parent="game.menu_1"
+              action="game.points_action_window"/>
 
   </data>
 </odoo>

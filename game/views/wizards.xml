@@ -1,5 +1,7 @@
 <odoo>
     <data>
+
+        <!-- ADD RAWS -->
         <record model="ir.ui.view" id="game.add_raws_wizard">
             <field name="name">wizard add raws </field>
             <field name="model">game.add_raws</field>
@@ -22,7 +24,7 @@
                         </field>
 
                         <field name="production_spend"/>
-                                                <field name="need"/>
+                        <field name="need"/>
 
                     </group>
                     <footer>
@@ -43,5 +45,90 @@
                     view_mode="form"
                     target="new"
         />
+
+        <!-- ASSIGN RAW TO PLAYER in a clan -->
+        <record model="ir.ui.view" id="game.assign_raws_wizard">
+            <field name="name">wizard assign raws </field>
+            <field name="model">game.assign_raws</field>
+            <field name="arch" type="xml">
+                <form string="Select Player">
+                    <group>
+                        <field name="raws"/>
+                        <field name="clan"/>
+                        <field name="player"/>
+                        <field name="quantity"/><field name="max"/>
+                    </group>
+                    <footer>
+                        <button name="launch" type="object"
+                                string="Launch" class="oe_highlight"/>
+                        or
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <act_window id="game.launch_assign_raws_wizard"
+                    name="Launch assign raws"
+                    src_model="game.resource"
+                    res_model="game.assign_raws"
+                    view_mode="form"
+                    target="new"
+        />
+
+
+        <!-- Create Battle -->
+        <record model="ir.ui.view" id="game.create_battle_wizard">
+            <field name="name">wizard create battle </field>
+            <field name="model">game.create_battle</field>
+            <field name="arch" type="xml">
+                <form string="Create Battle">
+                    <header>
+                         <field name="state"  widget="statusbar"/>
+                    </header>
+                    <group>
+                        <group states="i,c,d">
+                        <field name="attack"/>
+                        </group>
+                        <group states="c,d">
+                        <field name="characters" >
+                            <tree>
+                                <field name="name"/><field name="player"/>
+                                <field name="war"/><field name="age"/>
+                                <field name="health"/><field name="gun_power"/><field name="melee_power"/><field name="armor_power"/>
+                            </tree>
+                        </field>
+                        </group>
+                        <field name="clan" invisible="True"/>
+                        <group states="d">
+                        <field name="defend"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <group states="i,c">
+                        <button name="next" type="object"
+                                string="Next" class="oe_highlight"/>
+                        </group>
+                        <group states="d">
+                        <button name="create_battle" type="object"
+                                string="Create" class="oe_highlight"/>
+                        </group>
+                        or
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <act_window id="game.launch_create_battle_wizard"
+                    name="Create Battle"
+                    src_model="res.partner"
+                    res_model="game.create_battle"
+                    view_mode="form"
+                    target="new"
+        />
+
     </data>
 </odoo>

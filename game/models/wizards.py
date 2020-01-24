@@ -31,3 +31,94 @@ class add_raws(models.TransientModel):
 
             a.need = need
 
+
+class assign_raws(models.TransientModel):
+    _name = 'game.assign_raws'
+
+    def _default_raws(self):
+        return self.env['game.raws'].browse(self._context.get('active_id'))
+
+    def _default_clan(self):
+        clan = self.env['game.raws'].browse(self._context.get('active_id')).clan
+        return clan
+
+    raws = fields.Many2one('game.raws', default=_default_raws)
+    clan = fields.Many2one('game.clan', default=_default_clan)
+    player = fields.Many2one('res.partner', domain="[('clan','=',clan)]")
+    quantity = fields.Float('')
+    max = fields.Float(related='raws.quantity', string='Max')
+
+    def launch(self):
+        for i in self:
+            player = i.player
+            if i.quantity > i.max:
+                q = i.max
+            else:
+                q = i.quantity
+
+            raw = i.raws.raw.id
+            raws =  player.raws.search([('raw', '=', raw),('player','=',player.id)])[0]
+            raws.write({'quantity': q + raws.quantity})
+            i.raws.write({'quantity': i.raws.quantity - q})
+
+
+class create_battle(models.TransientModel):
+    _name = 'game.create_battle'
+
+    def _default_attacker(self):
+        return self.env['res.partner'].browse(self._context.get('active_id'))  # El context conté, entre altre coses,
+        # el active_id del model que està obert.
+
+    attack = fields.Many2one('res.partner', default=_default_attacker, readonly=True)
+    clan = fields.Many2one('game.clan',related='attack.clan')
+    characters = fields.Many2many('game.character', domain="[('player','=',attack)]")
+    defend = fields.Many2one('res.partner',domain="[('clan','!=',clan)]")
+
+    state = fields.Selection([
+        ('i', "Player Attack"),
+        ('c', "Characters Selection"),
+        ('d', "Defense Selection"),
+    ], default='i')
+
+
+
+    @api.multi
+    def next(self):
+        if self.state == 'i':
+            self.state = 'c'
+        elif self.state == 'c':
+            self.state = 'd'
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Create Battle',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
+
+    @api.multi
+    def create_battle(self):
+        print(self.attack)
+        print(self.characters)
+        print(self.defend)
+        b = self.env['game.battle'].create({
+            'attack': [(6,0,[self.attack.id])],
+            'characters_attack': [(6,0,self.characters.ids)],
+            'defend': [(6,0,[self.defend.id])]
+        })
+        return {
+            'name': 'Battle',
+            'view_type': 'form',
+            'view_mode': 'form',  # Pot ser form, tree, kanban...
+            'res_model': 'game.battle',  # El model de destí
+            'res_id': b.id,  # El id concret per obrir el form
+            # 'view_id': self.ref('wizards.reserves_form') # Opcional si hi ha més d'una vista posible.
+            'context': self._context,  # El context es pot ampliar per afegir opcions
+            'type': 'ir.actions.act_window',
+            'target': 'current',  # Si ho fem en current, canvia la finestra actual.
+        }
+
+
+

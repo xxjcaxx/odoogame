@@ -46,10 +46,11 @@
       <field name="arch" type="xml">
         <tree decoration-muted="state=='4'">
           <field name="name"/>
-          <field name="attack" widget="many2many_tags"/> <field name="defend" widget="many2many_tags"/>
+          <!-- <field name="attack" widget="many2many_tags"/> <field name="defend" widget="many2many_tags"/> -->
           <field name="characters_attack" widget="many2many_tags"/>
           <field name="characters_defend" widget="many2many_tags"/>
           <field name="date"/>
+            <field name="time_remaining"/>
           <field name="state"/>
 
         </tree>
@@ -135,6 +136,7 @@
       <field name="name">battle window</field>
       <field name="res_model">game.battle</field>
       <field name="view_mode">tree,form,calendar</field>
+        <field name="context">{'search_default_not_finished':1}</field>
     </record>
 
     <menuitem name="Battle" id="game.menu_battle" parent="game.menu_1"
@@ -168,6 +170,14 @@
             <notebook><page string="Players">
               <group>
                 <field name="players" mode="kanban"/>
+                <field name="raws">
+                  <tree>
+                    <field name="name"/>
+              <field name="raw"/>
+              <field name="quantity"/>
+              <button name="%(game.launch_assign_raws_wizard)d" type="action" string="Assign Raws"></button>
+                  </tree>
+                        </field>
               </group>
             </page>
               <page string="battles">
@@ -189,6 +199,7 @@
 
     <menuitem name="Clan" id="game.menu_clan" parent="game.menu_1"
               action="game.clan_action_window"/>
+
 
   </data>
 </odoo>

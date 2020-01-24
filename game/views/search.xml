@@ -1,5 +1,6 @@
 <odoo>
     <data>
+
         <record model="ir.ui.view" id="game.character_search">
             <field name="name">characters search</field>
             <field name="model">game.character</field>
@@ -18,6 +19,116 @@
             </field>
         </record>
 
+
+        <record model="ir.ui.view" id="game.fortress_search">
+            <field name="name">fortress search</field>
+            <field name="model">game.fortress</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="player"/>
+
+                    <filter name="group_by_player" string="Player" context="{'group_by': 'player'}"/>
+                </search>
+
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="game.resource_search">
+            <field name="name">resource search</field>
+            <field name="model">game.resource</field>
+            <field name="arch" type="xml">
+                <search>
+
+                    <field name="name"/>
+                    <field name="fortress"/>
+                    <field name="level"/>
+                    <field name="level" string="Min Level" filter_domain="[('level','&gt;=',self)]"/>
+                    <field name="knowledge"/>
+                    <filter name="mining" string="Mining" domain="[('knowledge', '=', '3')]"/>
+                    <filter name="none" string="None" domain="[('knowledge', '=', '0')]"/>
+                    <filter name="militar" string="Militar" domain="[('knowledge', '=', '1')]"/>
+                    <filter name="scientific" string="Scientific" domain="[('knowledge', '=', '2')]"/>
+                    <filter name="construction" string="Construction" domain="[('knowledge', '=', '4')]"/>
+                    <filter name="all" string="All" domain="[('knowledge', '=', '5')]"/>
+                    <filter name="group_by_fortress" string="fortress" context="{'group_by': 'fortress'}"/>
+                    <filter name="group_by_knowledge" string="Knowledge" context="{'group_by': 'knowledge'}"/>
+                </search>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="game.raw_search">
+            <field name="name">raw search</field>
+            <field name="model">game.raw</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="construccio" string="Min Construccio" filter_domain="[('construccio','&gt;=',self)]"/>
+                    <field name="armesblanques" string="Min Armes Blanques" filter_domain="[('armesblanques','&gt;=',self)]"/>
+                    <field name="armesfoc" string="Min Armes Foc" filter_domain="[('armesfoc','&gt;=',self)]"/>
+                    <field name="nutricio" string="Min Nutricio" filter_domain="[('nutricio','&gt;=',self)]"/>
+                    <field name="tecnologia" string="Min Tecnologia" filter_domain="[('tecnologia','&gt;=',self)]"/>
+                    <field name="medicina" string="Min medicina" filter_domain="[('medicina','&gt;=',self)]"/>
+                    <field name="energia" string="Min energia" filter_domain="[('energia','&gt;=',self)]"/>
+                </search>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="game.raws_search">
+            <field name="name">raws search</field>
+            <field name="model">game.raws</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="player"/>
+                    <filter name="group_by_player" string="Player" context="{'group_by': 'player'}"/>
+                    <field name="raw"/>
+                    <filter name="group_by_raw" string="Raw" context="{'group_by': 'raw'}"/>
+                    <field name="clan"/>
+                    <filter name="group_by_clan" string="Clan" context="{'group_by': 'clan'}"/>
+                    <field name="quantity" string="Min Quantity" filter_domain="[('quantity','&gt;=',self)]"/>
+                     <filter name="clan" string="Clan raw" domain="[('clan', '!=', False)]"/>
+                    <filter name="player" string="Player raw" domain="[('player', '!=', False)]"/>
+                </search>
+
+            </field>
+        </record>
+
+
+
+        <record model="ir.ui.view" id="game.battle_search">
+            <field name="name">battle search</field>
+            <field name="model">game.battle</field>
+            <field name="arch" type="xml">
+                <search>
+
+                    <field name="name"/>
+                    <filter name="not_finished" string="Not Finished" domain="[('finished', '=', False)]"/>
+                    <filter name="finished" string="Finished" domain="[('finished', '=', True)]"/>
+
+
+                </search>
+
+            </field>
+        </record>
+
+                <record model="ir.ui.view" id="game.points_search">
+            <field name="name">points search</field>
+            <field name="model">game.points</field>
+            <field name="arch" type="xml">
+                <search>
+
+                    <field name="date"/>
+                    <field name="player"/>
+                    <filter name="group_by_player" string="Player" context="{'group_by': 'player'}"/>
+
+                </search>
+
+            </field>
+        </record>
 
     </data>
 </odoo>

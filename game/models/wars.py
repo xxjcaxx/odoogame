@@ -3,6 +3,7 @@
 from odoo import models, fields, api, tools
 import random
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import math
 from openerp.exceptions import ValidationError
 
@@ -31,6 +32,7 @@ class clan(models.Model):
     image_small = fields.Binary(string='Clan Image', compute='_get_images', store=True)
     players = fields.One2many('res.partner','clan')
     battles = fields.Many2many('game.battle')
+    raws = fields.One2many('game.raws','clan', domain= lambda s: [('quantity','>',0)])
 
     @api.depends('image')
     def _get_images(self):
@@ -39,12 +41,19 @@ class clan(models.Model):
             data = tools.image_get_resized_images(image)
             i.image_small = data["image_small"]
 
+    @api.model
+    def create(self, values):
+        new_id = super(clan, self).create(values)
+        for i in self.env['game.raw'].search([]): # Assignar tots els Raws amb 0
+            r = self.env['game.raws'].create({'name': i.name, 'clan': new_id.id, 'raw': i.id, 'quantity': 0})
+        return new_id
+
 
 ########## Les batalles #########################
 
 class battle(models.Model):
     _name = 'game.battle'
-    name = fields.Char()
+    name = fields.Char(compute='_get_name')
     attack = fields.Many2many('res.partner', relation='player_attacks', column1='b_a',column2='p_a', domain="[('is_player','!=',True)]") # Cal especificar el nom de la taula
     defend = fields.Many2many('res.partner', relation='player_defends', column1='b_d',column2='p_d', domain="[('is_player','!=',True)]")
     characters_attack_available = fields.Many2many('game.character', compute='_get_characters_available')
@@ -52,6 +61,7 @@ class battle(models.Model):
     characters_attack = fields.Many2many('game.character',relation='characters_attack', domain="[('id', 'in', characters_attack_available)]")
     characters_defend = fields.Many2many('game.character',relation='characters_defend', domain="[('id', 'in', characters_defend_available)]")
     state = fields.Selection([('1','Creation'),('2','Character Selection'),('3','Waiting'),('4','Finished')], compute='_get_state')
+    time_remaining = fields.Char(compute='_get_state')
     def _get_date(self):
         date = datetime.now()+timedelta(hours=3)
         return fields.Datetime.to_string(date)
@@ -130,6 +140,16 @@ class battle(models.Model):
 
             return result
 
+    @api.depends('attack','defend')
+    def _get_name(self):
+        for b in self:
+            name = ''
+            for i in b.attack:
+                name = name  + i.name + ', '
+            name = name + ' VS '
+            for i in b.defend:
+                name = name + i.name  + ', '
+            b.name = name
 
 
     @api.multi
@@ -142,6 +162,13 @@ class battle(models.Model):
                 b.state = '3'
             if b.finished == True:
                 b.state = '4'
+            start = datetime.now()
+            end = fields.Datetime.from_string(b.date)
+            relative = relativedelta(end, start)
+            if end > start:
+                b.time_remaining = str(relative.hours)+":"+str(relative.minutes)
+            else:
+                b.time_remaining = '00:00'
 
     def compute_battle(self):
         for b in self:
@@ -189,14 +216,18 @@ class battle(models.Model):
                     s.write({'character':False,'player':player})
                 # L'atacant ataca per obtindre recursos del defensor
                 first_defender = b.defend[0]
-                for raw in first_defender.raws:
-                    print(raw.name)
+                #print(first_defender)
+                for r in first_defender.raws:
+                    raw = r.raw.id
+                    raws  = b.attack[0].clan.raws.search([('raw','=',raw),('clan','=',b.attack[0].clan.id)])[0]
+                    #print(raws)
+                    raws.write({'quantity':r.quantity/2}) # El clan obté la meitat dels recursos del defensor
 
             # Anem a fer que alguns dels caiguts siguen ferits i no morts
             death = (b.characters_attack + b.characters_defend).filtered(lambda c: c.health == 0)
             for d in death:
                 if random.random() > 0.5: # 50% de que no estiga mort
-                    d.write({'health':1})
+                    d.write({'health':1,'war':d.war+50}) # Augmenta la seua experiencia en guerra
 
 
             self.env['game.log'].create({'title': 'Battle '+str(b.name), 'description': wins+' wins in '+str(rounds)+' rounds'})
