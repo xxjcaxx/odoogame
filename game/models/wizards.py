@@ -121,4 +121,48 @@ class create_battle(models.TransientModel):
         }
 
 
+class proves_wizardraws(models.TransientModel):
+        _name = 'game.proves_wizardraws'
+
+        wiz = fields.Many2one('game.proves_wizard')
+        raw = fields.Many2one('game.raw')
+        quantity = fields.Integer()
+
+
+class proves_wizard(models.TransientModel):
+    _name = 'game.proves_wizard'
+
+    def _default_player(self):
+        print(self.id)
+        return self.env['res.partner'].browse(self._context.get('active_id'))
+
+    player = fields.Many2one('res.partner', default=_default_player)
+    raw = fields.Many2one('game.raw')
+    quantity = fields.Integer()
+    #raws = fields.Many2many('game.proves_wizardraws', compute='_get_raws')
+    raws = fields.One2many('game.proves_wizardraws', 'wiz')
+
+    def _get_raws(self):
+        for p in self:
+            list= self.env['game.proves_wizardraws'].search([])
+            p.raws = list.ids
+
+
+    def create_raws(self):
+        print(self.raw.id)
+        raw = self.env['game.proves_wizardraws'].create({'wiz': self.id, 'raw': self.raw.id, 'quantity': self.quantity})
+        print(self.id)
+        print(raw)
+        return {
+            'name': 'proves wizards',
+            'view_type': 'form',
+            'view_mode': 'form',  # Pot ser form, tree, kanban...
+            'res_model': 'game.proves_wizard',  # El model de destí
+            'res_id': self.id,  # El id concret per obrir el form
+            # 'view_id': self.ref('wizards.reserves_form') # Opcional si hi ha més d'una vista posible.
+            'context': self._context,  # El context es pot ampliar per afegir opcions
+            'type': 'ir.actions.act_window',
+            'target': 'new',  # Si ho fem en current, canvia la finestra actual.
+        }
+
 

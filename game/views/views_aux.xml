@@ -345,6 +345,29 @@
       <field name="view_mode">tree,graph,form</field>
     </record>
 
+      <record model="ir.ui.view" id="game.group_form">
+      <field name="name">group form</field>
+      <field name="model">game.group</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet><group>
+            <field name="name"/>
+            <field name="player"/>
+            <field name="leader"/>
+            <field name="members"/>
+            <field name="subgroups"/>
+
+          </group> </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="game.group_action_window">
+      <field name="name">group window</field>
+      <field name="res_model">game.group</field>
+      <field name="view_mode">tree,form</field>
+      <field name="context">{'default_is_player': True}</field>
+    </record>
 
 
 
@@ -363,6 +386,8 @@
 
     <menuitem name="Points" id="game.menu_points" parent="game.menu_1"
               action="game.points_action_window"/>
+    <menuitem name="Groups" id="game.menu_group" parent="game.menu_1"
+              action="game.group_action_window"/>
 
   </data>
 </odoo>

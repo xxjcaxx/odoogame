@@ -20,6 +20,7 @@ class player(models.Model):
      raws = fields.One2many('game.raws','player', domain= lambda s: [('quantity','>',0)])
      characters = fields.Many2many('game.character', compute='_get_resources')
      unemployeds = fields.Many2many('game.character', compute='_get_resources')
+     groups = fields.One2many('game.group','player')
 
      points = fields.Integer()
      points_history = fields.One2many('game.points','player')
@@ -671,8 +672,10 @@ class character(models.Model):
     def action_resurrect(self):
         print('RESUREECCCCCTTTT')
         for c in self.browse(self.env.context.get('active_ids')):
-            print(c.health)
+            #print(c.health)
             c.write({'health':100})
+
+    # Provar el records.
 
 class character_template(models.Model):
     _name = 'game.character.template'
@@ -849,3 +852,34 @@ class points(models.Model):
     player = fields.Many2one('res.partner')
     date = fields.Char(default=lambda self: fields.Datetime.now())
     points = fields.Integer()
+
+
+class group(models.Model):
+    _name = 'game.group'
+    _inherits = {'game.character':'character_id'}
+   # name = fields.Char()
+    #player = fields.Many2one('res.partner', domain="[('is_player','=',True)]")
+    leader = fields.Many2one('game.character', domain="[('player','=',player)]")
+    members = fields.Many2many('game.character', domain="[('player','=',player)]")
+    subgroups = fields.Many2many('game.group',
+                              relation='super_group',
+                              column1='super_id',
+                              column2='sub_id',
+                              domain="[('player','=',player.id)]")
+
+
+    @api.constrains('player','leader','characters','groups')
+    def _check_constrains(self):
+        for g in self:
+            player = g.player.id
+            if g.leader.player.id != player:
+                raise ValidationError("The leader is not a valid character")
+            if len(self.search([('leader','=',g.leader.id)])) > 1:
+                raise ValidationError("The leader is a leader for other group")
+            if len(g.characters.mapped('player')) > 1:
+                raise ValidationError("All the characters have to be of the same player")
+            elif g.characters.mapped('player')[0].id != player:
+                raise ValidationError("The characters have to be of the same player")
+
+
+

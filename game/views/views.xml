@@ -93,6 +93,14 @@
                                 <field name="raws"/>      <!-- Candidat a widget-->
                             </page>
                             <page string="Characters">
+                                <separator string="Groups"></separator>
+                                   <field name="groups">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="members" widget="many2many_tags"/>
+                                        <field name="subgroups" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
                                 <field name="characters" mode="kanban"/>      <!-- Candidat a widget-->
                                 <separator string="Unemployeds"></separator>
                                 <field name="unemployeds">
@@ -229,6 +237,14 @@
                                 <field name="raws"/>      <!-- Candidat a widget-->
                             </page>
                             <page string="Characters">
+                                <separator string="Groups"></separator>
+                                <field name="groups">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="members" widget="many2many_tags"/>
+                                        <field name="subgroups" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
                                 <field name="characters" mode="kanban"/>      <!-- Candidat a widget-->
                                 <separator string="Unemployeds"></separator>
                                 <field name="unemployeds">
@@ -242,8 +258,10 @@
                                 </field>
                             </page>
                             <page string="Wars">
-                                 <button name="%(game.launch_create_battle_wizard)d" type="action" string="Create Battle"
-                                            class="oe_highlight" ></button>
+                                <button name="%(game.launch_create_battle_wizard)d" type="action" string="Create Battle"
+                                        class="oe_highlight" ></button>
+                                  <button name="%(game.launch_proves_wizard)d" type="action" string="Proves Wizard"
+                                        class="oe_highlight" ></button>
                                 <separator string="Battles As Attack"></separator>
                                 <field name="battles_as_attack" />      <!-- Candidat a widget-->
                                 <separator string="Battles as Defense"></separator>
@@ -255,11 +273,11 @@
                                 <field name="stuff" />
 
                             </page>
-                                    <page string="Points">
-<separator string="Points"></separator>
+                            <page string="Points">
+                                <separator string="Points"></separator>
                                 <field name="points" />
-                                        <separator string="Points History"></separator>
-                                     <field name="points_history">
+                                <separator string="Points History"></separator>
+                                <field name="points_history">
                                     <tree>
                                         <field name="player"/>
                                         <field name="date"/>
@@ -267,8 +285,8 @@
                                     </tree>
 
                                 </field>
- <button name="%(game.launch_points_graph)d" type="action" string="Show Graph"
-                                            class="oe_highlight" ></button>
+                                <button name="%(game.launch_points_graph)d" type="action" string="Show Graph"
+                                        class="oe_highlight" ></button>
                             </page>
                         </notebook>
                         <footer>

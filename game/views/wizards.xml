@@ -130,5 +130,42 @@
                     target="new"
         />
 
+
+
+
+                <!-- Proves -->
+        <record model="ir.ui.view" id="game.proves_wizard_form">
+            <field name="name">proves </field>
+            <field name="model">game.proves_wizard</field>
+            <field name="arch" type="xml">
+                 <form string="Select Player">
+                    <group>
+                         <field name="player"/>
+                        <field name="raw"/>
+
+
+                        <field name="quantity"/>
+                         <field name="raws"/>
+                    </group>
+                    <footer>
+                        <button name="create_raws" type="object"
+                                string="Create Raws" class="oe_highlight"/>
+                        or
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+
+                </form>
+
+            </field>
+        </record>
+
+        <act_window id="game.launch_proves_wizard"
+                    name="Create Battle"
+                    src_model="res.partner"
+                    res_model="game.proves_wizard"
+                    view_mode="form"
+                    target="new"
+        />
+
     </data>
 </odoo>
